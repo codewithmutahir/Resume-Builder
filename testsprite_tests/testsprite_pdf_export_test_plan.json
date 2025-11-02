@@ -1,0 +1,55 @@
+{
+  "tests": [
+    {
+      "id": "PDF_EXPORT_001",
+      "name": "PDF Export Layout Verification",
+      "description": "Verify that exported PDF matches the web preview exactly",
+      "priority": "critical",
+      "steps": [
+        "Navigate to Resume Builder",
+        "Fill in Personal Details with sample data",
+        "Add one Education entry",
+        "Add one Work Experience entry", 
+        "Add 3-4 Skills",
+        "Select Modern template",
+        "Take screenshot of web preview",
+        "Click Download PDF button",
+        "Wait for PDF download",
+        "Open and verify PDF layout matches preview",
+        "Check for text overlap, positioning issues, missing content"
+      ],
+      "expected_result": "PDF layout exactly matches web preview with no overlapping text or formatting issues"
+    },
+    {
+      "id": "PDF_EXPORT_002",
+      "name": "PDF Canvas Dimensions Check",
+      "description": "Verify html2canvas is capturing correct dimensions",
+      "priority": "critical",
+      "steps": [
+        "Navigate to Resume Builder",
+        "Fill in complete resume data",
+        "Open browser console",
+        "Click Download PDF",
+        "Check console logs for element dimensions",
+        "Check for canvas creation logs",
+        "Verify no zero-dimension errors"
+      ],
+      "expected_result": "Console shows proper element dimensions and canvas creation without errors"
+    },
+    {
+      "id": "PDF_EXPORT_003",
+      "name": "PDF Export Across All Templates",
+      "description": "Test PDF export for each template",
+      "priority": "high",
+      "steps": [
+        "Fill complete resume data",
+        "Test Modern template PDF export",
+        "Test Classic template PDF export",
+        "Test Minimal template PDF export",
+        "Verify each PDF renders correctly"
+      ],
+      "expected_result": "All templates export to PDF with correct layout and styling"
+    }
+  ]
+}
+

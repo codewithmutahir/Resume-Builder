@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "executionArgs": {
+    "projectName": "Resume Builder",
+    "projectPath": "C:\\Users\\mutha\\OneDrive\\Desktop\\Resume Builder",
+    "testIds": [
+      "TC005"
+    ],
+    "additionalInstruction": "Focus specifically on PDF export functionality. After filling the resume with data, click the Download PDF button and check browser console for any dimension errors or canvas creation issues. Take screenshots of both the web preview and attempt to download the PDF to compare layouts.",
+    "envs": {
+      "API_KEY": "sk-user-bM9ZU1sLAoiRO8zoskpWEAS5Ztm7YFhbcMx6cgkiS8kQ56AFg8xIDlzFYCq-QgQeNkT0xv6JKaGUaPqR-xK8aueKh4YZxBQHF6I5nYqo8MNGamhp-4bd54eoTyUMp2sRNb8"
+    }
+  },
+  "proxy": "http://2225477b-ad21-4d2b-8650-b77f5e5c600b:FpQXxmih9Rfzwmv93TSuxT1QXiMCoSHW@tun.testsprite.com:8080"
+}

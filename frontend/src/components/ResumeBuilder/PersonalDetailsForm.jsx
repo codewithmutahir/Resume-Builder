@@ -14,40 +14,47 @@ export const PersonalDetailsForm = () => {
   };
 
   const handleGenerateSummary = async () => {
-      const title = personal.title || 'professional';
-      const name = personal.fullName || 'a candidate';
-      const location = personal.location || '';
+    const title = personal.title || 'professional';
+    const name = personal.fullName || 'a candidate';
+    const location = personal.location || '';
+    
+    const prompt = `Write a professional resume summary for ${name}, a ${title}${location ? ' based in ' + location : ''}. The summary should be 2-3 sentences, highlighting their expertise, skills, and professional value. Make it concise and impactful.`;
+    
+    try {
+      handleChange('summary', "Generating summary...");
       
-      // Create a clear prompt for the generation model
-      const prompt = `Write a professional resume summary for ${name}, a ${title}${location ? ' based in ' + location : ''}. The summary should be 2-3 sentences, highlighting their expertise, skills, and professional value. Make it concise and impactful.`;
+      // Get API URL from environment variable
+      const API_URL = process.env.REACT_APP_API_URL || '';
+      const endpoint = `${API_URL}/api/summarize`;
       
-      try {
-        handleChange('summary', "Generating summary...");
-        const response = await fetch("/api/summarize", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ text: prompt })
-        }); 
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          handleChange('summary', errorData.message || "Could not generate summary. Please try again.");
-          return;
-        }
-        
-        const data = await response.json();
-        if (data.summary) {
-          handleChange('summary', data.summary);
-        } else {
-          handleChange('summary', "Could not generate summary. Please try again.");
-        }
-      } catch (err) {
-        console.error('Error generating summary:', err);
-        handleChange('summary', "Error generating summary. Please try again.");
+      console.log('Calling API:', endpoint); // Debug log
+      
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text: prompt })
+      }); 
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error('API Error:', data);
+        handleChange('summary', data.message || data.error || "Could not generate summary. Please try again.");
+        return;
       }
+      
+      if (data.summary) {
+        handleChange('summary', data.summary);
+      } else {
+        handleChange('summary', "Could not generate summary. Please try again.");
+      }
+    } catch (err) {
+      console.error('Error generating summary:', err);
+      handleChange('summary', "Error: " + err.message);
     }
+  }
 
   return (
     <Card className="p-6 space-y-6">

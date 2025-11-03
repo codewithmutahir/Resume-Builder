@@ -13,21 +13,6 @@ export const PersonalDetailsForm = () => {
     updatePersonal({ [field]: value });
   };
 
-  const summarizeText = async (text) => {
-    const res = await fetch("/api/summarize", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-    });
-    const data = await res.json();
-    return data.summary;
-  };
-
-  const handleSummaryChange = async (e) => {
-    const summary = await summarizeText(e.target.value);
-    updatePersonal({ summary });
-  };
-
   return (
     <Card className="p-6 space-y-6">
       <div>

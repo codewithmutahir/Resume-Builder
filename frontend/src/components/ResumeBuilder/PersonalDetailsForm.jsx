@@ -13,6 +13,30 @@ export const PersonalDetailsForm = () => {
     updatePersonal({ [field]: value });
   };
 
+  const handleGenerateSummary = async () => {
+      const baseInfo = `${personal.fullName ? personal.fullName + ', ' : ''}${personal.title ? personal.title + ', ' : ''}${personal.location ? personal.location + ', ' : ''}${personal.email ? personal.email + ', ' : ''}${personal.phone ? personal.phone : ''}`;
+      const linkedInWeb = [personal.linkedin, personal.website].filter(Boolean).join(', ');
+      const context = `Name, Title, Location, Email, Phone: ${baseInfo}. LinkedIn/Website: ${linkedInWeb}. Please generate a concise personalized professional summary for a resume with this context.`;
+      try {
+        handleChange('summary', "Generating summary...");
+        const response = await fetch("/api/summarize", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ text: context })
+        }); 
+        const data = await response.json();
+        if (data.summary) {
+          handleChange('summary', data.summary);
+        } else {
+          handleChange('summary', "Could not generate summary. Please try again.");
+        }
+      } catch (err) {
+        handleChange('summary', "Error generating summary.");
+      }
+    }
+
   return (
     <Card className="p-6 space-y-6">
       <div>
@@ -100,31 +124,7 @@ export const PersonalDetailsForm = () => {
           <button
             type="button"
             className="ml-2 text-xs underline text-blue-600 hover:text-blue-800"
-            onClick={async () => {
-              // Collect relevant personal information for context
-              const baseInfo = `${personal.fullName ? personal.fullName + ', ' : ''}${personal.title ? personal.title + ', ' : ''}${personal.location ? personal.location + ', ' : ''}${personal.email ? personal.email + ', ' : ''}${personal.phone ? personal.phone : ''}`;
-              const linkedInWeb = [personal.linkedin, personal.website].filter(Boolean).join(', ');
-              const context = `Name, Title, Location, Email, Phone: ${baseInfo}. LinkedIn/Website: ${linkedInWeb}. Please generate a concise personalized professional summary for a resume with this context.`;
-              try {
-                // Show a loading indication (could be replaced by state for full UX)
-                handleChange('summary', "Generating summary...");
-                const response = await fetch("/api/summarize", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify({ text: context })
-                });
-                const data = await response.json();
-                if (data.summary) {
-                  handleChange('summary', data.summary);
-                } else {
-                  handleChange('summary', "Could not generate summary. Please try again.");
-                }
-              } catch (err) {
-                handleChange('summary', "Error generating summary.");
-              }
-            }}
+            onClick={handleGenerateSummary}
           >
             Generate with AI
           </button>

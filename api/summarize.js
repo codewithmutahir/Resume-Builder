@@ -37,9 +37,10 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Use FLAN-T5 for text generation (better for creating content from prompts)
+        // Use the NEW HuggingFace Inference Providers API (router endpoint)
+        // Using FLAN-T5 for text generation
         const response = await fetch(
-            'https://api-inference.huggingface.co/models/google/flan-t5-large',
+            'https://router.huggingface.co/hf-inference/models/google/flan-t5-large',
             {
                 method: 'POST',
                 headers: {

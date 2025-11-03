@@ -15,58 +15,91 @@ export const PersonalDetailsForm = () => {
 
   const handleGenerateSummary = async () => {
     const title = personal.title || 'professional';
-    const name = personal.fullName || 'a professional';
+    const name = personal.fullName || 'candidate';
     const location = personal.location || '';
-    const email = personal.email || '';
-    const phone = personal.phone || '';
-    const linkedin = personal.linkedin || '';
-    const website = personal.website || '';
     
-    // FLAN-T5 is a text generation model that follows instructions
-    // Create a clear instruction prompt for generating a professional summary
-    const instruction = `Write a professional resume summary for ${name}, a ${title}${location ? ' based in ' + location : ''}${email ? ' with email ' + email : ''}${phone ? ' and phone ' + phone : ''}. 
-The summary should be 2-3 sentences highlighting their expertise as a ${title}, key skills, professional value, and what they bring to potential employers. 
-Make it concise, impactful, and professional. ${linkedin ? 'Mention they have LinkedIn profile ' + linkedin + '.' : ''} ${website ? 'They have a portfolio at ' + website + '.' : ''}`;
+    // Check if title is provided
+    if (!personal.title || personal.title.trim() === '') {
+      handleChange('summary', "Please enter your professional title first to generate a summary.");
+      return;
+    }
+    
+    // Create instruction for the AI model
+    const prompt = `Write a professional 2-3 sentence resume summary for a ${title}${location ? ' based in ' + location : ''}. The summary should highlight their expertise, key skills, and professional value. Make it concise, impactful, and suitable for a resume header. Focus on what makes them valuable to potential employers.`;
     
     try {
       handleChange('summary', "Generating summary...");
       
-      const response = await fetch("/api/summarize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ text: instruction })
-      });
+      // Get the HF token from environment or prompt user
+      const HF_TOKEN = process.env.REACT_APP_HF_TOKEN || 'YOUR_HUGGINGFACE_TOKEN_HERE';
       
-      // Check if response is ok before parsing
-      if (!response.ok) {
-        // Try to get error message
-        let errorMessage = `Server error: ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorData.error || errorMessage;
-        } catch (e) {
-          // If JSON parsing fails, use status text
-          errorMessage = response.statusText || errorMessage;
-        }
-        console.error('API Error:', errorMessage);
-        handleChange('summary', errorMessage);
+      if (HF_TOKEN === 'YOUR_HUGGINGFACE_TOKEN_HERE') {
+        handleChange('summary', "Error: HuggingFace API token not configured. Please add your HF_TOKEN to environment variables.");
         return;
       }
       
-      // Parse successful response
-      const data = await response.json();
+      const response = await fetch(
+        "https://router.huggingface.co/v1/chat/completions",
+        {
+          headers: {
+            Authorization: `Bearer ${HF_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify({
+            model: "mistralai/Mistral-7B-Instruct-v0.2:featherless-ai",
+            messages: [
+              { role: "user", content: prompt }
+            ],
+            max_tokens: 150,
+            temperature: 0.7,
+            top_p: 0.9,
+          })
+        }
+      );
       
-      if (data.summary) {
-        handleChange('summary', data.summary);
-      } else {
-        handleChange('summary', "Could not generate summary. Please try again.");
-      }
-    } catch (err) {
-      console.error('Error generating summary:', err);
-      handleChange('summary', `Error: ${err.message}`);
+     // Clone response before reading
+const resClone = response.clone();
+
+// Check if response is ok before parsing
+if (!response.ok) {
+  const errorText = await resClone.text();
+  console.error('HuggingFace API Error:', response.status, errorText);
+  
+  if (response.status === 401) {
+    handleChange('summary', "Authentication error: Invalid HuggingFace API token. Please check your token.");
+  } else if (response.status === 503) {
+    handleChange('summary', "Model is loading. Please wait a moment and try again.");
+  } else {
+    handleChange('summary', `Error: ${response.status}. Please try again.`);
+  }
+  return;
+}
+      
+      // Parse successful response
+const data = await response.json();
+
+// ✅ HuggingFace chat response format
+const generatedSummary = data?.choices?.[0]?.message?.content?.trim();
+
+if (generatedSummary) {
+  handleChange('summary', generatedSummary);
+} else {
+  console.error('Unexpected response format:', data);
+  handleChange('summary', "Could not generate summary. Please try again.");
+}
+
+
+
     }
+    
+    catch (err) {
+      console.error('Error generating summary:', err);
+      handleChange('summary', `Error: ${err.message}. Please check your internet connection.`);
+    }
+
+
+    
   };
 
   return (
@@ -155,8 +188,9 @@ Make it concise, impactful, and professional. ${linkedin ? 'Mention they have Li
           Professional Summary{" "}
           <button
             type="button"
-            className="ml-2 text-xs underline text-blue-600 hover:text-blue-800"
+            className="ml-2 text-xs underline text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleGenerateSummary}
+            disabled={!personal.title || personal.title.trim() === ''}
           >
             Generate with AI
           </button>
@@ -170,9 +204,9 @@ Make it concise, impactful, and professional. ${linkedin ? 'Mention they have Li
         />
         <p className="text-xs text-muted-foreground">2-3 sentences highlighting your expertise and what you bring to the role</p>
         <p className="text-xs text-muted-foreground mt-1">
-          <span className="font-medium">Tip:</span> Click "Generate with AI" to create a personalized summary using HuggingFace AI.
+          <span className="font-medium">Tip:</span> Enter your professional title, then click "Generate with AI" to create a personalized summary.
         </p>
       </div>
     </Card>
   );
-};
+}

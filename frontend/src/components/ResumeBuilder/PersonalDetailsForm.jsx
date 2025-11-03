@@ -31,10 +31,11 @@ export const PersonalDetailsForm = () => {
       handleChange('summary', "Generating summary...");
       
       // Get the HF token from environment or prompt user
-      const HF_TOKEN = process.env.REACT_APP_HF_TOKEN || 'YOUR_HUGGINGFACE_TOKEN_HERE';
+      const HF_TOKEN = process.env.REACT_APP_HF_TOKEN;
       
-      if (HF_TOKEN === 'YOUR_HUGGINGFACE_TOKEN_HERE') {
-        handleChange('summary', "Error: HuggingFace API token not configured. Please add your HF_TOKEN to environment variables.");
+      if (!HF_TOKEN || HF_TOKEN === 'YOUR_HUGGINGFACE_TOKEN_HERE') {
+        handleChange('summary', "Error: HuggingFace API token not configured. Please add REACT_APP_HF_TOKEN to your environment variables and redeploy.");
+        console.error('REACT_APP_HF_TOKEN is not set. Value:', process.env.REACT_APP_HF_TOKEN);
         return;
       }
       

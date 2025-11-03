@@ -23,7 +23,7 @@
 3. Go to **Settings** → **Environment Variables**
 4. Click **Add New**
 5. Set:
-   - **Name**: `HF_TOKEN`
+   - **Name**: `REACT_APP_HF_TOKEN`
    - **Value**: Your HuggingFace token (the one starting with `hf_...`)
    - **Environment**: Select all (Production, Preview, Development)
 6. Click **Save**
@@ -31,7 +31,7 @@
 #### Option B: Via Vercel CLI
 
 ```bash
-vercel env add HF_TOKEN
+vercel env add REACT_APP_HF_TOKEN
 # When prompted, paste your HuggingFace token
 # Select all environments when asked
 ```
@@ -105,8 +105,8 @@ To test locally with Vercel CLI:
 # Install Vercel CLI if you haven't
 npm i -g vercel
 
-# Create a .env file at the root (NOT in frontend folder)
-echo "HF_TOKEN=your_token_here" > .env
+# Create a .env file in the frontend folder (for Create React App)
+echo "REACT_APP_HF_TOKEN=your_token_here" > frontend/.env
 
 # Run Vercel dev server
 vercel dev
@@ -118,9 +118,10 @@ vercel dev
 ## 🐛 Troubleshooting
 
 ### "Error generating summary"
-- Check that HF_TOKEN is set in Vercel environment variables
-- Verify you've redeployed after adding the token
-- Check Vercel Function logs: Dashboard → Your Project → Functions
+- Check that `REACT_APP_HF_TOKEN` is set in Vercel environment variables (not `HF_TOKEN`)
+- Verify you've redeployed after adding the token (environment variables require a new build)
+- Make sure the variable name is exactly `REACT_APP_HF_TOKEN` (case-sensitive)
+- Check browser console for detailed error messages
 
 ### "Model is loading"
 - This is normal for the first request

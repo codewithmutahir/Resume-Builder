@@ -4,7 +4,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { useResume } from '../../context/ResumeContext';
-import summarize from '../../api/summarize';
 
 export const PersonalDetailsForm = () => {
   const { resumeData, updatePersonal } = useResume();

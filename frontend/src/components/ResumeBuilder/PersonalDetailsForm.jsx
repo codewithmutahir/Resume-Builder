@@ -18,16 +18,17 @@ export const PersonalDetailsForm = () => {
     const name = personal.fullName || 'a candidate';
     const location = personal.location || '';
     
+    // Create a clear prompt for the generation model
     const prompt = `Write a professional resume summary for ${name}, a ${title}${location ? ' based in ' + location : ''}. The summary should be 2-3 sentences, highlighting their expertise, skills, and professional value. Make it concise and impactful.`;
     
     try {
       handleChange('summary', "Generating summary...");
       
-      // Get API URL from environment variable
+      // Get API URL from environment variable (no trailing slash)
       const API_URL = process.env.REACT_APP_API_URL || '';
       const endpoint = `${API_URL}/api/summarize`;
       
-      console.log('Calling API:', endpoint); // Debug log
+      console.log('Calling API:', endpoint);
       
       const response = await fetch(endpoint, {
         method: "POST",
@@ -35,15 +36,26 @@ export const PersonalDetailsForm = () => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ text: prompt })
-      }); 
+      });
       
-      const data = await response.json();
-      
+      // Check if response is ok before parsing
       if (!response.ok) {
-        console.error('API Error:', data);
-        handleChange('summary', data.message || data.error || "Could not generate summary. Please try again.");
+        // Try to get error message
+        let errorMessage = `Server error: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch (e) {
+          // If JSON parsing fails, use status text
+          errorMessage = response.statusText || errorMessage;
+        }
+        console.error('API Error:', errorMessage);
+        handleChange('summary', errorMessage);
         return;
       }
+      
+      // Parse successful response
+      const data = await response.json();
       
       if (data.summary) {
         handleChange('summary', data.summary);
@@ -52,9 +64,9 @@ export const PersonalDetailsForm = () => {
       }
     } catch (err) {
       console.error('Error generating summary:', err);
-      handleChange('summary', "Error: " + err.message);
+      handleChange('summary', `Error: ${err.message}`);
     }
-  }
+  };
 
   return (
     <Card className="p-6 space-y-6">
@@ -163,5 +175,3 @@ export const PersonalDetailsForm = () => {
     </Card>
   );
 };
-
-

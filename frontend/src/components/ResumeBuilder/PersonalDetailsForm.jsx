@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { useResume } from '../../context/ResumeContext';
+import summarize from '../../api/summarize';
 
 export const PersonalDetailsForm = () => {
   const { resumeData, updatePersonal } = useResume();
@@ -11,6 +12,21 @@ export const PersonalDetailsForm = () => {
 
   const handleChange = (field, value) => {
     updatePersonal({ [field]: value });
+  };
+
+  const summarizeText = async (text) => {
+    const res = await fetch("/api/summarize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    return data.summary;
+  };
+
+  const handleSummaryChange = async (e) => {
+    const summary = await summarizeText(e.target.value);
+    updatePersonal({ summary });
   };
 
   return (
@@ -95,7 +111,40 @@ export const PersonalDetailsForm = () => {
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="summary">Professional Summary</Label>
+        <Label htmlFor="summary">
+          Professional Summary{" "}
+          <button
+            type="button"
+            className="ml-2 text-xs underline text-blue-600 hover:text-blue-800"
+            onClick={async () => {
+              // Collect relevant personal information for context
+              const baseInfo = `${personal.fullName ? personal.fullName + ', ' : ''}${personal.title ? personal.title + ', ' : ''}${personal.location ? personal.location + ', ' : ''}${personal.email ? personal.email + ', ' : ''}${personal.phone ? personal.phone : ''}`;
+              const linkedInWeb = [personal.linkedin, personal.website].filter(Boolean).join(', ');
+              const context = `Name, Title, Location, Email, Phone: ${baseInfo}. LinkedIn/Website: ${linkedInWeb}. Please generate a concise personalized professional summary for a resume with this context.`;
+              try {
+                // Show a loading indication (could be replaced by state for full UX)
+                handleChange('summary', "Generating summary...");
+                const response = await fetch("/api/summarize", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({ text: context })
+                });
+                const data = await response.json();
+                if (data.summary) {
+                  handleChange('summary', data.summary);
+                } else {
+                  handleChange('summary', "Could not generate summary. Please try again.");
+                }
+              } catch (err) {
+                handleChange('summary', "Error generating summary.");
+              }
+            }}
+          >
+            Generate with AI
+          </button>
+        </Label>
         <Textarea
           id="summary"
           placeholder="A brief summary of your professional background, skills, and career objectives..."
@@ -104,6 +153,9 @@ export const PersonalDetailsForm = () => {
           onChange={(e) => handleChange('summary', e.target.value)}
         />
         <p className="text-xs text-muted-foreground">2-3 sentences highlighting your expertise and what you bring to the role</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          <span className="font-medium">Tip:</span> Click "Generate with AI" to create a personalized summary using HuggingFace AI.
+        </p>
       </div>
     </Card>
   );

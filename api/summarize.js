@@ -37,10 +37,10 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Use the NEW HuggingFace Inference Providers API (router endpoint)
-        // Using FLAN-T5 for text generation
+        // Use FLAN-T5-Large for text generation (text-to-text model)
+        // This model can generate text from instructions, not just summarize
         const response = await fetch(
-            'https://router.huggingface.co/hf-inference/models/google/flan-t5-large',
+            'https://api-inference.huggingface.co/models/google/flan-t5-large',
             {
                 method: 'POST',
                 headers: {
@@ -51,6 +51,7 @@ export default async function handler(req, res) {
                     inputs: text,
                     parameters: {
                         max_new_tokens: 150,
+                        min_length: 40,
                         temperature: 0.7,
                         top_p: 0.9,
                         do_sample: true,
@@ -79,7 +80,7 @@ export default async function handler(req, res) {
 
         const data = await response.json();
         
-        // FLAN-T5 returns different formats - handle both
+        // FLAN-T5 returns array with generated_text (text generation model)
         let generatedText = null;
         
         if (Array.isArray(data) && data.length > 0) {
@@ -87,22 +88,20 @@ export default async function handler(req, res) {
             if (data[0].generated_text) {
                 generatedText = data[0].generated_text;
             }
-            // Format: [{ "summary_text": "..." }] (fallback for some models)
-            else if (data[0].summary_text) {
-                generatedText = data[0].summary_text;
-            }
         } else if (typeof data === 'string') {
-            // Format: Direct string response
             generatedText = data;
         } else if (data.generated_text) {
             // Format: { "generated_text": "..." }
             generatedText = data.generated_text;
+        } else if (data.summary_text) {
+            // Fallback for summarization models
+            generatedText = data.summary_text;
         }
         
         if (generatedText && generatedText.trim().length > 0) {
             return res.status(200).json({ summary: generatedText.trim() });
         } else {
-            console.error('Unexpected HuggingFace response format:', data);
+            console.error('Unexpected HuggingFace response format:', JSON.stringify(data, null, 2));
             return res.status(500).json({ 
                 error: "Unexpected response format from AI service",
                 data: data
@@ -116,4 +115,5 @@ export default async function handler(req, res) {
         });
     }
 }
+
 

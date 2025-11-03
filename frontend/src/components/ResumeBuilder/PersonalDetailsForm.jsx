@@ -15,27 +15,28 @@ export const PersonalDetailsForm = () => {
 
   const handleGenerateSummary = async () => {
     const title = personal.title || 'professional';
-    const name = personal.fullName || 'a candidate';
+    const name = personal.fullName || 'a professional';
     const location = personal.location || '';
+    const email = personal.email || '';
+    const phone = personal.phone || '';
+    const linkedin = personal.linkedin || '';
+    const website = personal.website || '';
     
-    // Create a clear prompt for the generation model
-    const prompt = `Write a professional resume summary for ${name}, a ${title}${location ? ' based in ' + location : ''}. The summary should be 2-3 sentences, highlighting their expertise, skills, and professional value. Make it concise and impactful.`;
+    // FLAN-T5 is a text generation model that follows instructions
+    // Create a clear instruction prompt for generating a professional summary
+    const instruction = `Write a professional resume summary for ${name}, a ${title}${location ? ' based in ' + location : ''}${email ? ' with email ' + email : ''}${phone ? ' and phone ' + phone : ''}. 
+The summary should be 2-3 sentences highlighting their expertise as a ${title}, key skills, professional value, and what they bring to potential employers. 
+Make it concise, impactful, and professional. ${linkedin ? 'Mention they have LinkedIn profile ' + linkedin + '.' : ''} ${website ? 'They have a portfolio at ' + website + '.' : ''}`;
     
     try {
       handleChange('summary', "Generating summary...");
       
-      // Get API URL from environment variable (no trailing slash)
-      const API_URL = process.env.REACT_APP_API_URL || '';
-      const endpoint = `${API_URL}/api/summarize`;
-      
-      console.log('Calling API:', endpoint);
-      
-      const response = await fetch(endpoint, {
+      const response = await fetch("/api/summarize", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ text: prompt })
+        body: JSON.stringify({ text: instruction })
       });
       
       // Check if response is ok before parsing

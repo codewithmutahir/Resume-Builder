@@ -37,9 +37,9 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Call HuggingFace Inference API
+        // Use FLAN-T5 for text generation (better for creating content from prompts)
         const response = await fetch(
-            'https://api-inference.huggingface.co/models/facebook/bart-large-cnn',
+            'https://api-inference.huggingface.co/models/google/flan-t5-large',
             {
                 method: 'POST',
                 headers: {
@@ -49,9 +49,11 @@ export default async function handler(req, res) {
                 body: JSON.stringify({
                     inputs: text,
                     parameters: {
-                        max_length: 130,
-                        min_length: 30,
-                        do_sample: false
+                        max_new_tokens: 150,
+                        temperature: 0.7,
+                        top_p: 0.9,
+                        do_sample: true,
+                        return_full_text: false
                     }
                 }),
             }
@@ -76,9 +78,28 @@ export default async function handler(req, res) {
 
         const data = await response.json();
         
-        // HuggingFace returns an array with summary_text
-        if (Array.isArray(data) && data.length > 0 && data[0].summary_text) {
-            return res.status(200).json({ summary: data[0].summary_text });
+        // FLAN-T5 returns different formats - handle both
+        let generatedText = null;
+        
+        if (Array.isArray(data) && data.length > 0) {
+            // Format: [{ "generated_text": "..." }]
+            if (data[0].generated_text) {
+                generatedText = data[0].generated_text;
+            }
+            // Format: [{ "summary_text": "..." }] (fallback for some models)
+            else if (data[0].summary_text) {
+                generatedText = data[0].summary_text;
+            }
+        } else if (typeof data === 'string') {
+            // Format: Direct string response
+            generatedText = data;
+        } else if (data.generated_text) {
+            // Format: { "generated_text": "..." }
+            generatedText = data.generated_text;
+        }
+        
+        if (generatedText && generatedText.trim().length > 0) {
+            return res.status(200).json({ summary: generatedText.trim() });
         } else {
             console.error('Unexpected HuggingFace response format:', data);
             return res.status(500).json({ 

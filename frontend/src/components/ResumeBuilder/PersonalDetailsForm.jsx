@@ -14,9 +14,13 @@ export const PersonalDetailsForm = () => {
   };
 
   const handleGenerateSummary = async () => {
-      const baseInfo = `${personal.fullName ? personal.fullName + ', ' : ''}${personal.title ? personal.title + ', ' : ''}${personal.location ? personal.location + ', ' : ''}${personal.email ? personal.email + ', ' : ''}${personal.phone ? personal.phone : ''}`;
-      const linkedInWeb = [personal.linkedin, personal.website].filter(Boolean).join(', ');
-      const context = `Name, Title, Location, Email, Phone: ${baseInfo}. LinkedIn/Website: ${linkedInWeb}. Please generate a concise personalized professional summary for a resume with this context.`;
+      const title = personal.title || 'professional';
+      const name = personal.fullName || 'a candidate';
+      const location = personal.location || '';
+      
+      // Create a clear prompt for the generation model
+      const prompt = `Write a professional resume summary for ${name}, a ${title}${location ? ' based in ' + location : ''}. The summary should be 2-3 sentences, highlighting their expertise, skills, and professional value. Make it concise and impactful.`;
+      
       try {
         handleChange('summary', "Generating summary...");
         const response = await fetch("/api/summarize", {
@@ -24,8 +28,15 @@ export const PersonalDetailsForm = () => {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ text: context })
+          body: JSON.stringify({ text: prompt })
         }); 
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          handleChange('summary', errorData.message || "Could not generate summary. Please try again.");
+          return;
+        }
+        
         const data = await response.json();
         if (data.summary) {
           handleChange('summary', data.summary);
@@ -33,7 +44,8 @@ export const PersonalDetailsForm = () => {
           handleChange('summary', "Could not generate summary. Please try again.");
         }
       } catch (err) {
-        handleChange('summary', "Error generating summary.");
+        console.error('Error generating summary:', err);
+        handleChange('summary', "Error generating summary. Please try again.");
       }
     }
 

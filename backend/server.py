@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List
 import uuid
 from datetime import datetime, timezone
+import requests
 
 
 ROOT_DIR = Path(__file__).parent
@@ -36,6 +37,12 @@ class StatusCheck(BaseModel):
 
 class StatusCheckCreate(BaseModel):
     client_name: str
+
+class SummarizeRequest(BaseModel):
+    text: str
+
+class SummarizeResponse(BaseModel):
+    summary: str
 
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
@@ -65,6 +72,81 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     
     return status_checks
+
+@api_router.post("/summarize", response_model=SummarizeResponse)
+async def summarize_text(request: SummarizeRequest):
+    """
+    Generate a summary using HuggingFace's BART model.
+    Requires HF_TOKEN environment variable to be set.
+    """
+    hf_token = os.environ.get('HF_TOKEN')
+    
+    if not hf_token:
+        raise HTTPException(
+            status_code=500, 
+            detail="HuggingFace API token not configured. Please set HF_TOKEN environment variable."
+        )
+    
+    if not request.text or len(request.text.strip()) == 0:
+        raise HTTPException(status_code=400, detail="Text cannot be empty")
+    
+    try:
+        # HuggingFace Inference API endpoint
+        api_url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
+        
+        headers = {
+            "Authorization": f"Bearer {hf_token}",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "inputs": request.text,
+            "parameters": {
+                "max_length": 130,
+                "min_length": 30,
+                "do_sample": False
+            }
+        }
+        
+        response = requests.post(api_url, headers=headers, json=payload, timeout=30)
+        
+        if response.status_code == 503:
+            # Model is loading, retry after a moment
+            raise HTTPException(
+                status_code=503,
+                detail="AI model is loading. Please try again in a few seconds."
+            )
+        
+        if response.status_code != 200:
+            logger.error(f"HuggingFace API error: {response.status_code} - {response.text}")
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"HuggingFace API error: {response.text}"
+            )
+        
+        result = response.json()
+        
+        # HuggingFace returns an array with summary_text
+        if isinstance(result, list) and len(result) > 0 and 'summary_text' in result[0]:
+            summary = result[0]['summary_text']
+            return SummarizeResponse(summary=summary)
+        else:
+            logger.error(f"Unexpected HuggingFace response format: {result}")
+            raise HTTPException(
+                status_code=500,
+                detail="Unexpected response format from AI service"
+            )
+            
+    except requests.exceptions.Timeout:
+        raise HTTPException(status_code=504, detail="Request to AI service timed out")
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Request error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error connecting to AI service: {str(e)}")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error in summarize endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred")
 
 # Include the router in the main app
 app.include_router(api_router)

@@ -1,26 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { FileText, Mail, Lock, Chrome } from 'lucide-react';
+import { FileText, Mail, Lock, Chrome, CheckCircle2, XCircle, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { validateEmail } from '../utils/validation';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  
   const { login, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  // Real-time email validation
+  useEffect(() => {
+    if (email) {
+      const validation = validateEmail(email);
+      setEmailError(validation.valid ? '' : validation.message);
+    } else {
+      setEmailError('');
+    }
+  }, [email]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validate email
+    const emailValidation = validateEmail(email);
+    setEmailError(emailValidation.valid ? '' : emailValidation.message);
+
     if (!email || !password) {
       toast.error('Please fill in all fields');
+      return;
+    }
+
+    if (!emailValidation.valid) {
+      toast.error('Please enter a valid email address');
       return;
     }
 
@@ -127,17 +150,37 @@ const Login = () => {
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${emailError ? 'text-destructive' : email && !emailError ? 'text-green-500' : 'text-muted-foreground'}`} />
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
-                  required
+                  className={`pl-10 pr-10 ${emailError ? 'border-destructive focus-visible:ring-destructive' : email && !emailError ? 'border-green-500 focus-visible:ring-green-500' : ''}`}
                 />
+                {email && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    {emailError ? (
+                      <XCircle className="w-5 h-5 text-destructive" />
+                    ) : (
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    )}
+                  </div>
+                )}
               </div>
+              {emailError && (
+                <p className="text-xs text-destructive flex items-center gap-1">
+                  <XCircle className="w-3 h-3" />
+                  {emailError}
+                </p>
+              )}
+              {email && !emailError && (
+                <p className="text-xs text-green-500 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Valid email address
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -146,20 +189,28 @@ const Login = () => {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
-                  required
+                  className="pl-10 pr-10"
                 />
+                {password && (
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                )}
               </div>
             </div>
 
             <Button
               type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+              disabled={loading || !!emailError || !email || !password}
+              className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>

@@ -78,7 +78,7 @@ export const uploadPDFToFirebase = async (pdfBlob, resumeData, templateName, use
       fullName: resumeData.personal?.fullName || 'Unknown',
       email: resumeData.personal?.email || null,
       template: templateName,
-      userId: userId, // Add user ID to track who generated the resume
+      userId: userId || null, // Ensure userId is set (even if null)
       createdAt: serverTimestamp(),
       // Optionally save additional resume data
       resumeData: {
@@ -90,14 +90,33 @@ export const uploadPDFToFirebase = async (pdfBlob, resumeData, templateName, use
       }
     };
     
-    console.log('Saving metadata to Firestore...', metadata);
+    console.log('=== SAVING TO FIRESTORE ===');
+    console.log('Metadata to save:', {
+      ...metadata,
+      userId: userId,
+      userIdType: typeof userId,
+      userIdLength: userId?.length,
+      hasUserId: !!userId
+    });
+    
+    if (!userId) {
+      console.error('⚠️⚠️⚠️ CRITICAL: userId is null/undefined!');
+      console.error('This resume will NOT be associated with any user!');
+      console.error('Resume will be saved but may not appear in Profile page.');
+      console.error('Make sure user is signed in before downloading PDF.');
+    } else {
+      console.log('✅ userId is present:', userId);
+    }
     
     // Add document to Firestore
     const docRef = await addDoc(collection(db, 'resumes'), metadata);
     
     console.log('✅ Successfully saved to Firestore!', {
       documentId: docRef.id,
-      collection: 'resumes'
+      collection: 'resumes',
+      userId: metadata.userId,
+      fullName: metadata.fullName,
+      template: metadata.template
     });
     
     return {

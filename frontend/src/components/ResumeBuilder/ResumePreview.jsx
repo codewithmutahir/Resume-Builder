@@ -65,12 +65,22 @@ export const ResumePreview = () => {
       toast.loading('Downloading PDF...', { id: toastId });
       let uploadSuccess = false;
       try {
+        console.log('Current user:', currentUser);
+        console.log('User ID:', currentUser?.uid);
+        console.log('User ID type:', typeof currentUser?.uid);
+        
+        if (!currentUser) {
+          console.warn('⚠️ No current user! PDF will be saved without userId.');
+        }
+        
         const uploadResult = await uploadPDFToFirebase(blob, resumeData, selectedTemplate, currentUser?.uid);
         console.log('✅ PDF downloaded successfully:', uploadResult);
         uploadSuccess = true;
         
         // Increment resume count for the user
-        await incrementResumeCount();
+        if (currentUser) {
+          await incrementResumeCount();
+        }
         
         toast.success(`PDF downloaded! Document ID: ${uploadResult.documentId}`, { 
           id: toastId,

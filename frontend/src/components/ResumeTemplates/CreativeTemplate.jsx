@@ -23,8 +23,26 @@ export const CreativeTemplate = ({ data, colors }) => {
       {/* Header */}
       <div style={{ background: primaryColor, color: 'white', padding: '24px 32px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'relative', zIndex: 10 }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '6px' }}>{personal.fullName || 'Your Name'}</h1>
-          <p style={{ fontSize: '1.25rem', color: '#e9d5ff', marginBottom: '12px' }}>{personal.title || 'Professional Title'}</p>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
+            {personal.picture && (
+              <img
+                src={personal.picture}
+                alt="Profile"
+                style={{
+                  width: '110px',
+                  height: '110px',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  border: '4px solid rgba(255, 255, 255, 0.3)',
+                  flexShrink: 0
+                }}
+              />
+            )}
+            <div style={{ flex: 1 }}>
+              <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '6px' }}>{personal.fullName || 'Your Name'}</h1>
+              <p style={{ fontSize: '1.25rem', color: '#e9d5ff', marginBottom: '12px' }}>{personal.title || 'Professional Title'}</p>
+            </div>
+          </div>
           
           <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '12px', fontSize: '0.875rem' }}>
             {personal.email && (

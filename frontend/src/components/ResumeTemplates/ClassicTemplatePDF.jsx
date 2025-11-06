@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -33,6 +33,15 @@ export const ClassicTemplatePDF = ({ data, colors }) => {
       paddingRight: 32,
       borderBottomWidth: 4,
       borderBottomColor: primaryColor,
+    },
+    profileImage: {
+      width: 110,
+      height: 110,
+      borderRadius: 55,
+      borderWidth: 4,
+      borderColor: primaryColor,
+      marginBottom: 16,
+      alignSelf: 'center',
     },
     name: {
       fontSize: 28,
@@ -153,6 +162,12 @@ export const ClassicTemplatePDF = ({ data, colors }) => {
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
+          {personal?.picture && (
+            <Image
+              src={personal.picture}
+              style={styles.profileImage}
+            />
+          )}
           <Text style={styles.name}>{personal?.fullName || 'Your Name'}</Text>
           <Text style={styles.title}>{personal?.title || 'Professional Title'}</Text>
           

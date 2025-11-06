@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -27,6 +27,22 @@ export const MinimalTemplatePDF = ({ data, colors }) => {
     },
     header: {
       marginBottom: 32,
+    },
+    headerContent: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: 24,
+      marginBottom: 16,
+    },
+    profileImage: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      borderWidth: 2,
+      borderColor: accentColor,
+    },
+    headerText: {
+      flex: 1,
     },
     name: {
       fontSize: 36,
@@ -124,8 +140,18 @@ export const MinimalTemplatePDF = ({ data, colors }) => {
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.name}>{personal?.fullName || 'Your Name'}</Text>
-          <Text style={styles.title}>{personal?.title || 'Professional Title'}</Text>
+          <View style={styles.headerContent}>
+            {personal?.picture && (
+              <Image
+                src={personal.picture}
+                style={styles.profileImage}
+              />
+            )}
+            <View style={styles.headerText}>
+              <Text style={styles.name}>{personal?.fullName || 'Your Name'}</Text>
+              <Text style={styles.title}>{personal?.title || 'Professional Title'}</Text>
+            </View>
+          </View>
           
           <View style={styles.contactInfo}>
             {personal?.email && <Text style={styles.contactItem}>{personal.email}</Text>}

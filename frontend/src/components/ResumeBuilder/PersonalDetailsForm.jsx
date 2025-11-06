@@ -1,16 +1,51 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { X, Upload } from 'lucide-react';
 import { useResume } from '../../context/ResumeContext';
 
 export const PersonalDetailsForm = () => {
   const { resumeData, updatePersonal } = useResume();
   const { personal } = resumeData;
+  const fileInputRef = useRef(null);
 
   const handleChange = (field, value) => {
     updatePersonal({ [field]: value });
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+
+    // Convert to base64
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result;
+      handleChange('picture', base64String);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    handleChange('picture', '');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const handleGenerateSummary = async () => {
@@ -110,6 +145,46 @@ export const PersonalDetailsForm = () => {
         <p className="text-sm text-muted-foreground">Tell us about yourself. This information will appear at the top of your resume.</p>
       </div>
       
+      {/* Profile Picture Upload */}
+      <div className="space-y-2">
+        <Label>Profile Picture (Optional)</Label>
+        <div className="flex items-center gap-4">
+          {personal.picture ? (
+            <div className="relative">
+              <img
+                src={personal.picture}
+                alt="Profile"
+                className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                aria-label="Remove picture"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="w-24 h-24 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50">
+              <Upload className="w-8 h-8 text-gray-400" />
+            </div>
+          )}
+          <div className="flex-1">
+            <Input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="cursor-pointer"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Recommended: Square image (400x400 pixels or 500x500 pixels), max 5MB. JPG, PNG, or GIF.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="fullName">Full Name *</Label>

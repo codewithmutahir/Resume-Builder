@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Svg, Path } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image, Svg, Path } from '@react-pdf/renderer';
 
 // Icon components
 const MailIcon = () => (
@@ -74,6 +74,18 @@ export const ElegantTemplatePDF = ({ data, colors }) => {
       fontSize: 22,
       fontWeight: 'bold',
       marginBottom: 8,
+    },
+    sidebarHeader: {
+      marginBottom: 32,
+      alignItems: 'center',
+    },
+    profileImage: {
+      width: 110,
+      height: 110,
+      borderRadius: 55,
+      borderWidth: 4,
+      borderColor: 'rgba(255, 255, 255, 0.3)',
+      marginBottom: 16,
     },
     sidebarTitle: {
       fontSize: 11,
@@ -203,7 +215,13 @@ export const ElegantTemplatePDF = ({ data, colors }) => {
       <Page size="A4" style={styles.page}>
         {/* Sidebar */}
         <View style={styles.sidebar}>
-          <View style={{ marginBottom: 32 }}>
+          <View style={styles.sidebarHeader}>
+            {personal?.picture && (
+              <Image
+                src={personal.picture}
+                style={styles.profileImage}
+              />
+            )}
             <Text style={styles.sidebarName}>{personal?.fullName || 'Your Name'}</Text>
             <Text style={styles.sidebarTitle}>{personal?.title || 'Professional Title'}</Text>
           </View>

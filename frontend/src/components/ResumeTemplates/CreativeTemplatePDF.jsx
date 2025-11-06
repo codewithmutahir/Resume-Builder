@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Svg, Path } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image, Svg, Path } from '@react-pdf/renderer';
 
 // Icon components
 const MailIcon = () => (
@@ -65,6 +65,21 @@ export const CreativeTemplatePDF = ({ data, colors }) => {
       backgroundColor: primaryColor,
       color: '#ffffff',
       padding: 20,
+    },
+    headerContent: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: 16,
+    },
+    profileImage: {
+      width: 90,
+      height: 90,
+      borderRadius: 45,
+      borderWidth: 4,
+      borderColor: 'rgba(255, 255, 255, 0.3)',
+    },
+    headerText: {
+      flex: 1,
     },
     name: {
       fontSize: 28,
@@ -221,8 +236,18 @@ export const CreativeTemplatePDF = ({ data, colors }) => {
       <Page size="A4" style={styles.page} wrap>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.name}>{personal?.fullName || 'Your Name'}</Text>
-          <Text style={styles.title}>{personal?.title || 'Professional Title'}</Text>
+          <View style={styles.headerContent}>
+            {personal?.picture && (
+              <Image
+                src={personal.picture}
+                style={styles.profileImage}
+              />
+            )}
+            <View style={styles.headerText}>
+              <Text style={styles.name}>{personal?.fullName || 'Your Name'}</Text>
+              <Text style={styles.title}>{personal?.title || 'Professional Title'}</Text>
+            </View>
+          </View>
           
           <View style={styles.contactInfo}>
             {personal?.email && (

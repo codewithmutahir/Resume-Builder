@@ -21,6 +21,22 @@ export const ClassicTemplate = ({ data, colors }) => {
     <div style={{ backgroundColor: 'white', color: textColor, minHeight: '100%', fontFamily: 'Georgia, serif' }}>
       {/* Header */}
       <div style={{ textAlign: 'center', paddingBottom: '24px', paddingTop: '32px', paddingLeft: '32px', paddingRight: '32px', borderBottom: `4px solid ${primaryColor}` }}>
+        {personal.picture && (
+          <div style={{ marginBottom: '16px' }}>
+            <img
+              src={personal.picture}
+              alt="Profile"
+              style={{
+                width: '140px',
+                height: '140px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: `4px solid ${primaryColor}`,
+                margin: '0 auto'
+              }}
+            />
+          </div>
+        )}
         <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '8px', letterSpacing: '0.05em', fontFamily: 'Playfair Display, serif' }}>
           {personal.fullName || 'Your Name'}
         </h1>

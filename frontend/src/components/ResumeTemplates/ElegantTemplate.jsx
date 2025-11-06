@@ -23,7 +23,23 @@ export const ElegantTemplate = ({ data, colors }) => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', minHeight: '100%' }}>
         {/* Sidebar */}
         <div style={{ backgroundColor: primaryColor, color: '#f3f4f6', padding: '32px' }}>
-          <div style={{ marginBottom: '32px' }}>
+          <div style={{ marginBottom: '32px', textAlign: 'center' }}>
+            {personal.picture && (
+              <div style={{ marginBottom: '16px' }}>
+                <img
+                  src={personal.picture}
+                  alt="Profile"
+                  style={{
+                    width: '140px',
+                    height: '140px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '4px solid rgba(255, 255, 255, 0.3)',
+                    margin: '0 auto'
+                  }}
+                />
+              </div>
+            )}
             <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', marginBottom: '8px', fontFamily: 'Playfair Display, serif' }}>
               {personal.fullName || 'Your Name'}
             </h1>

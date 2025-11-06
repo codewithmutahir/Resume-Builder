@@ -61,7 +61,8 @@ const initialData = {
     location: '',
     linkedin: '',
     website: '',
-    summary: ''
+    summary: '',
+    picture: ''
   },
   education: [],
   experience: [],

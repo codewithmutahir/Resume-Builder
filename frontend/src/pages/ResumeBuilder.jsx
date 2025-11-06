@@ -1,11 +1,23 @@
 import React from "react";
 import { ResumeProvider, useResume } from "../context/ResumeContext";
+import { useAuth } from "../context/AuthContext";
 import { StepIndicator } from "@/components/ResumeBuilder/StepIndicator";
 import FormContainer from "../components/ResumeBuilder/FormContainer";
 import { ResumePreview } from "@/components/ResumeBuilder/ResumePreview";
-import { FileText, Sparkles, Zap, Stars } from "lucide-react";
+import { FileText, Sparkles, Zap, Stars, User, LogOut } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
 
 const StepIndicatorWrapper = () => {
   const { currentStep, setCurrentStep } = useResume();
@@ -15,6 +27,28 @@ const StepIndicatorWrapper = () => {
 };
 
 const ResumeBuilder = () => {
+  const { currentUser, userData, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      // Error handled in AuthContext
+    }
+  };
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <ResumeProvider>
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 relative overflow-hidden">
@@ -94,23 +128,69 @@ const ResumeBuilder = () => {
                 </div>
               </div>
 
-              {/* Live Preview Badge - Hidden on small mobile */}
-              <motion.div 
-                className="hidden sm:flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-md md:rounded-lg bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 backdrop-blur-sm flex-shrink-0"
-                initial={{ x: 20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                whileHover={{ scale: 1.05, borderColor: "hsl(var(--primary))" }}
-              >
-                <motion.div
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              {/* Right Side: Live Preview Badge + User Menu */}
+              <div className="flex items-center gap-2 md:gap-4">
+                {/* Live Preview Badge - Hidden on small mobile */}
+                <motion.div 
+                  className="hidden sm:flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-md md:rounded-lg bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 backdrop-blur-sm flex-shrink-0"
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  whileHover={{ scale: 1.05, borderColor: "hsl(var(--primary))" }}
                 >
-                  <Stars className="w-3 h-3 md:w-4 md:h-4 text-accent" />
+                  <motion.div
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Stars className="w-3 h-3 md:w-4 md:h-4 text-accent" />
+                  </motion.div>
+                  <span className="text-xs md:text-sm font-medium text-foreground hidden md:inline">Live Preview</span>
+                  <span className="text-xs font-medium text-foreground md:hidden">Live</span>
                 </motion.div>
-                <span className="text-xs md:text-sm font-medium text-foreground hidden md:inline">Live Preview</span>
-                <span className="text-xs font-medium text-foreground md:hidden">Live</span>
-              </motion.div>
+
+                {/* User Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="relative h-10 w-10 rounded-full border border-primary/20 hover:border-primary/40"
+                    >
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={currentUser?.photoURL || userData?.photoURL} />
+                        <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-background">
+                          {getInitials(currentUser?.displayName || userData?.displayName || currentUser?.email)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">
+                          {currentUser?.displayName || userData?.displayName || 'User'}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {currentUser?.email}
+                        </p>
+                        {userData?.resumeCount !== undefined && (
+                          <p className="text-xs leading-none text-muted-foreground mt-1">
+                            {userData.resumeCount} resume{userData.resumeCount !== 1 ? 's' : ''} generated
+                          </p>
+                        )}
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
         </motion.header>

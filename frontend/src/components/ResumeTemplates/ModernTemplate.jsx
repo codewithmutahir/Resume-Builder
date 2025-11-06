@@ -22,10 +22,26 @@ export const ModernTemplate = ({ data, colors }) => {
     <div className="bg-white text-gray-900 min-h-full" style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
       <div style={{ background: primaryColor, color: 'white', padding: '32px' }}>
-        <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '8px' }}>{personal.fullName || 'Your Name'}</h1>
-        <p style={{ fontSize: '1.25rem', color: accentColor, marginBottom: '16px' }}>{personal.title || 'Professional Title'}</p>
-        
-        <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '16px', fontSize: '0.875rem' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px' }}>
+          {personal.picture && (
+            <img
+              src={personal.picture}
+              alt="Profile"
+              style={{
+                width: '120px',
+                height: '120px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '4px solid rgba(255, 255, 255, 0.3)',
+                flexShrink: 0
+              }}
+            />
+          )}
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '8px' }}>{personal.fullName || 'Your Name'}</h1>
+            <p style={{ fontSize: '1.25rem', color: accentColor, marginBottom: '16px' }}>{personal.title || 'Professional Title'}</p>
+            
+            <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '16px', fontSize: '0.875rem' }}>
           {personal.email && (
             <div style={{ display: 'flex', alignItems: 'center', marginRight: '16px', marginBottom: '4px' }}>
               <Mail className="w-4 h-4" style={{ marginRight: '4px' }} />
@@ -56,6 +72,8 @@ export const ModernTemplate = ({ data, colors }) => {
               <span>{personal.website}</span>
             </div>
           )}
+            </div>
+          </div>
         </div>
       </div>
 

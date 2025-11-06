@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Svg, Path } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image, Svg, Path } from '@react-pdf/renderer';
 
 // Icon components
 const MailIcon = () => (
@@ -45,7 +45,7 @@ const formatDate = (dateString) => {
 
 export const ModernTemplatePDF = ({ data, colors }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
-  
+
   // Use provided colors or fallback to defaults
   const primaryColor = colors?.primary || '#2563eb';
   const secondaryColor = colors?.secondary || '#1e40af';
@@ -64,6 +64,21 @@ export const ModernTemplatePDF = ({ data, colors }) => {
       backgroundColor: primaryColor,
       color: '#ffffff',
       padding: 32,
+    },
+    headerContent: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: 24,
+    },
+    profileImage: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      borderWidth: 4,
+      borderColor: 'rgba(255, 255, 255, 0.3)',
+    },
+    headerText: {
+      flex: 1,
     },
     name: {
       fontSize: 28,
@@ -175,40 +190,50 @@ export const ModernTemplatePDF = ({ data, colors }) => {
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.name}>{personal?.fullName || 'Your Name'}</Text>
-          <Text style={styles.title}>{personal?.title || 'Professional Title'}</Text>
-          
-          <View style={styles.contactInfo}>
-            {personal?.email && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
-                <MailIcon />
-                <Text style={styles.contactItem}>{personal.email}</Text>
-              </View>
+          <View style={styles.headerContent}>
+            {personal?.picture && (
+              <Image
+                src={personal.picture}
+                style={styles.profileImage}
+              />
             )}
-            {personal?.phone && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
-                <PhoneIcon />
-                <Text style={styles.contactItem}>{personal.phone}</Text>
+            <View style={styles.headerText}>
+              <Text style={styles.name}>{personal?.fullName || 'Your Name'}</Text>
+              <Text style={styles.title}>{personal?.title || 'Professional Title'}</Text>
+
+              <View style={styles.contactInfo}>
+                {personal?.email && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
+                    <MailIcon />
+                    <Text style={styles.contactItem}>{personal.email}</Text>
+                  </View>
+                )}
+                {personal?.phone && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
+                    <PhoneIcon />
+                    <Text style={styles.contactItem}>{personal.phone}</Text>
+                  </View>
+                )}
+                {personal?.location && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
+                    <LocationIcon />
+                    <Text style={styles.contactItem}>{personal.location}</Text>
+                  </View>
+                )}
+                {personal?.linkedin && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
+                    <LinkedinIcon />
+                    <Text style={styles.contactItem}>{personal.linkedin}</Text>
+                  </View>
+                )}
+                {personal?.website && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
+                    <GlobeIcon />
+                    <Text style={styles.contactItem}>{personal.website}</Text>
+                  </View>
+                )}
               </View>
-            )}
-            {personal?.location && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
-                <LocationIcon />
-                <Text style={styles.contactItem}>{personal.location}</Text>
-              </View>
-            )}
-            {personal?.linkedin && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
-                <LinkedinIcon />
-                <Text style={styles.contactItem}>{personal.linkedin}</Text>
-              </View>
-            )}
-            {personal?.website && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
-                <GlobeIcon />
-                <Text style={styles.contactItem}>{personal.website}</Text>
-              </View>
-            )}
+            </View>
           </View>
         </View>
 

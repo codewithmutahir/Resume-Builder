@@ -7,9 +7,10 @@ import { cloudinaryConfig, isCloudinaryConfigured } from '../config/cloudinary';
  * @param {Blob} pdfBlob - The PDF blob to upload
  * @param {Object} resumeData - The resume data object
  * @param {string} templateName - The template name used
+ * @param {string} userId - The user ID (optional)
  * @returns {Promise<Object>} - Object containing download URL and document ID
  */
-export const uploadPDFToFirebase = async (pdfBlob, resumeData, templateName) => {
+export const uploadPDFToFirebase = async (pdfBlob, resumeData, templateName, userId = null) => {
   // Check if Cloudinary is configured
   if (!isCloudinaryConfigured) {
     console.error('Cloudinary configuration check failed:', {
@@ -77,6 +78,7 @@ export const uploadPDFToFirebase = async (pdfBlob, resumeData, templateName) => 
       fullName: resumeData.personal?.fullName || 'Unknown',
       email: resumeData.personal?.email || null,
       template: templateName,
+      userId: userId, // Add user ID to track who generated the resume
       createdAt: serverTimestamp(),
       // Optionally save additional resume data
       resumeData: {

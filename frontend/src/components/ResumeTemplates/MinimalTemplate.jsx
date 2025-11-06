@@ -21,8 +21,26 @@ export const MinimalTemplate = ({ data, colors }) => {
     <div style={{ backgroundColor: 'white', color: textColor, minHeight: '100%', padding: '48px', fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
       <div style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '3rem', fontWeight: '300', marginBottom: '4px', letterSpacing: '-0.025em' }}>{personal.fullName || 'Your Name'}</h1>
-        <p style={{ fontSize: '1.125rem', color: secondaryColor, fontWeight: '300' }}>{personal.title || 'Professional Title'}</p>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', marginBottom: '16px' }}>
+          {personal.picture && (
+            <img
+              src={personal.picture}
+              alt="Profile"
+              style={{
+                width: '100px',
+                height: '100px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: `2px solid ${accentColor}`,
+                flexShrink: 0
+              }}
+            />
+          )}
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontSize: '3rem', fontWeight: '300', marginBottom: '4px', letterSpacing: '-0.025em' }}>{personal.fullName || 'Your Name'}</h1>
+            <p style={{ fontSize: '1.125rem', color: secondaryColor, fontWeight: '300' }}>{personal.title || 'Professional Title'}</p>
+          </div>
+        </div>
         
         <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '16px', fontSize: '0.875rem', color: secondaryColor }}>
           {personal.email && <span style={{ marginRight: '12px' }}>{personal.email}</span>}

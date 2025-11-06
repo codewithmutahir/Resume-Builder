@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, FileText } from 'lucide-react';
 import { useResume } from '@/context/ResumeContext';
+import { useAuth } from '@/context/AuthContext';
 import { ModernTemplate } from '@/components/ResumeTemplates/ModernTemplate';
 import { ClassicTemplate } from '@/components/ResumeTemplates/ClassicTemplate';
 import { MinimalTemplate } from '@/components/ResumeTemplates/MinimalTemplate';
@@ -35,6 +36,7 @@ const templatesPDF = {
 
 export const ResumePreview = () => {
   const { resumeData, selectedTemplate, templateColors } = useResume();
+  const { incrementResumeCount, currentUser } = useAuth();
   const previewRef = useRef(null);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -63,9 +65,13 @@ export const ResumePreview = () => {
       toast.loading('Downloading PDF...', { id: toastId });
       let uploadSuccess = false;
       try {
-        const uploadResult = await uploadPDFToFirebase(blob, resumeData, selectedTemplate);
+        const uploadResult = await uploadPDFToFirebase(blob, resumeData, selectedTemplate, currentUser?.uid);
         console.log('✅ PDF downloaded successfully:', uploadResult);
         uploadSuccess = true;
+        
+        // Increment resume count for the user
+        await incrementResumeCount();
+        
         toast.success(`PDF downloaded! Document ID: ${uploadResult.documentId}`, { 
           id: toastId,
           duration: 4000 

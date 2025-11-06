@@ -11,6 +11,46 @@ const ResumeContext = createContext();
 };
 
 const STORAGE_KEY = 'resume_builder_data';
+const COLOR_STORAGE_KEY = 'resume_builder_colors';
+
+// Default colors for each template
+const defaultColors = {
+  modern: {
+    primary: '#2563eb',
+    secondary: '#1e40af',
+    accent: '#dbeafe',
+    text: '#111827',
+    textSecondary: '#374151'
+  },
+  classic: {
+    primary: '#1f2937',
+    secondary: '#374151',
+    accent: '#9ca3af',
+    text: '#111827',
+    textSecondary: '#374151'
+  },
+  minimal: {
+    primary: '#6b7280',
+    secondary: '#4b5563',
+    accent: '#9ca3af',
+    text: '#111827',
+    textSecondary: '#374151'
+  },
+  elegant: {
+    primary: '#1f2937',
+    secondary: '#374151',
+    accent: '#9ca3af',
+    text: '#111827',
+    textSecondary: '#374151'
+  },
+  creative: {
+    primary: '#9333ea',
+    secondary: '#7c3aed',
+    accent: '#2563eb',
+    text: '#111827',
+    textSecondary: '#374151'
+  }
+};
 
 const initialData = {
   personal: {
@@ -45,6 +85,22 @@ const ResumeProvider = ({ children }) => {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
+  
+  // Color state - load from localStorage or use defaults
+  const [templateColors, setTemplateColors] = useState(() => {
+    try {
+      const saved = localStorage.getItem(COLOR_STORAGE_KEY);
+      if (saved) {
+        const savedColors = JSON.parse(saved);
+        // Merge saved colors with defaults to ensure all templates have colors
+        return { ...defaultColors, ...savedColors };
+      }
+      return defaultColors;
+    } catch (error) {
+      console.error('Error loading color data:', error);
+      return defaultColors;
+    }
+  });
 
   // Save to localStorage whenever data changes
   useEffect(() => {
@@ -54,6 +110,15 @@ const ResumeProvider = ({ children }) => {
       console.error('Error saving resume data:', error);
     }
   }, [resumeData]);
+
+  // Save colors to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(COLOR_STORAGE_KEY, JSON.stringify(templateColors));
+    } catch (error) {
+      console.error('Error saving color data:', error);
+    }
+  }, [templateColors]);
 
   const updatePersonal = (data) => {
     setResumeData(prev => ({
@@ -86,10 +151,19 @@ const ResumeProvider = ({ children }) => {
     setResumeData(prev => ({ ...prev, references }));
   };
 
+  const updateTemplateColors = (templateId, colors) => {
+    setTemplateColors(prev => ({
+      ...prev,
+      [templateId]: { ...prev[templateId], ...colors }
+    }));
+  };
+
   const resetResume = () => {
     setResumeData(initialData);
     setCurrentStep(0);
+    setTemplateColors(defaultColors);
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(COLOR_STORAGE_KEY);
   };
 
   const value = {
@@ -98,6 +172,8 @@ const ResumeProvider = ({ children }) => {
     setCurrentStep,
     selectedTemplate,
     setSelectedTemplate,
+    templateColors,
+    updateTemplateColors,
     updatePersonal,
     updateEducation,
     updateExperience,

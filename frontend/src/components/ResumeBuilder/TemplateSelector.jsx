@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { useResume } from '../../context/ResumeContext';
 import { cn } from '@/lib/utils';
+import { ColorPicker } from './ColorPicker';
 
 const templates = [
   {
@@ -98,6 +99,11 @@ export const TemplateSelector = () => {
             </div>
           </Card>
         ))}
+      </div>
+
+      {/* Color Picker */}
+      <div className="mt-8">
+        <ColorPicker />
       </div>
     </div>
   );

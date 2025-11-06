@@ -59,36 +59,36 @@ export const PersonalDetailsForm = () => {
         }
       );
       
-     // Clone response before reading
-const resClone = response.clone();
+            // Clone response before reading
+        const resClone = response.clone();
 
-// Check if response is ok before parsing
-if (!response.ok) {
-  const errorText = await resClone.text();
-  console.error('HuggingFace API Error:', response.status, errorText);
-  
-  if (response.status === 401) {
-    handleChange('summary', "Authentication error: Invalid HuggingFace API token. Please check your token.");
-  } else if (response.status === 503) {
-    handleChange('summary', "Model is loading. Please wait a moment and try again.");
-  } else {
-    handleChange('summary', `Error: ${response.status}. Please try again.`);
-  }
-  return;
-}
-      
-      // Parse successful response
-const data = await response.json();
+      // Check if response is ok before parsing
+      if (!response.ok) {
+        const errorText = await resClone.text();
+        console.error('HuggingFace API Error:', response.status, errorText);
+        
+        if (response.status === 401) {
+          handleChange('summary', "Authentication error: Invalid HuggingFace API token. Please check your token.");
+        } else if (response.status === 503) {
+          handleChange('summary', "Model is loading. Please wait a moment and try again.");
+        } else {
+          handleChange('summary', `Error: ${response.status}. Please try again.`);
+        }
+        return;
+      }
+            
+              // Parse successful response
+        const data = await response.json();
 
-// ✅ HuggingFace chat response format
-const generatedSummary = data?.choices?.[0]?.message?.content?.trim();
+        // ✅ HuggingFace chat response format
+        const generatedSummary = data?.choices?.[0]?.message?.content?.trim();
 
-if (generatedSummary) {
-  handleChange('summary', generatedSummary);
-} else {
-  console.error('Unexpected response format:', data);
-  handleChange('summary', "Could not generate summary. Please try again.");
-}
+        if (generatedSummary) {
+          handleChange('summary', generatedSummary);
+        } else {
+          console.error('Unexpected response format:', data);
+          handleChange('summary', "Could not generate summary. Please try again.");
+        }
 
 
 

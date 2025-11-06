@@ -15,6 +15,7 @@ import { ElegantTemplatePDF } from '@/components/ResumeTemplates/ElegantTemplate
 import { CreativeTemplatePDF } from '@/components/ResumeTemplates/CreativeTemplatePDF';
 import { pdf } from '@react-pdf/renderer';
 import { toast } from 'sonner';
+import { uploadPDFToFirebase } from '@/services/pdfStorage';
 
 const templates = {
   modern: ModernTemplate,
@@ -33,11 +34,12 @@ const templatesPDF = {
 };
 
 export const ResumePreview = () => {
-  const { resumeData, selectedTemplate } = useResume();
+  const { resumeData, selectedTemplate, templateColors } = useResume();
   const previewRef = useRef(null);
   const [isExporting, setIsExporting] = useState(false);
 
   const TemplateComponent = templates[selectedTemplate] || ModernTemplate;
+  const colors = templateColors[selectedTemplate] || templateColors.modern;
 
   const handleDownloadPDF = async () => {
     if (isExporting) return;
@@ -53,9 +55,30 @@ export const ResumePreview = () => {
       const PDFTemplateComponent = templatesPDF[selectedTemplate] || ModernTemplatePDF;
       
       // Generate the PDF blob using @react-pdf/renderer
-      const blob = await pdf(<PDFTemplateComponent data={resumeData} />).toBlob();
+      const blob = await pdf(<PDFTemplateComponent data={resumeData} colors={colors} />).toBlob();
       
       console.log('PDF blob generated, size:', blob.size);
+
+      // Upload PDF to Cloudinary and save metadata to Firestore
+      toast.loading('Downloading PDF...', { id: toastId });
+      let uploadSuccess = false;
+      try {
+        const uploadResult = await uploadPDFToFirebase(blob, resumeData, selectedTemplate);
+        console.log('✅ PDF downloaded successfully:', uploadResult);
+        uploadSuccess = true;
+        toast.success(`PDF downloaded! Document ID: ${uploadResult.documentId}`, { 
+          id: toastId,
+          duration: 4000 
+        });
+      } catch (uploadError) {
+        console.error('❌ Upload error:', uploadError);
+        console.error('Error message:', uploadError.message);
+        // Continue with download even if upload fails
+        toast.error(`Upload failed: ${uploadError.message}`, { 
+          id: toastId,
+          duration: 5000 
+        });
+      }
 
       // Create download link
       const url = URL.createObjectURL(blob);
@@ -73,7 +96,10 @@ export const ResumePreview = () => {
       URL.revokeObjectURL(url);
 
       console.log('PDF downloaded successfully!');
-      toast.success('Resume downloaded successfully!', { id: toastId });
+      if (!uploadSuccess) {
+        // Only show this if upload failed (success message already shown above)
+        toast.success('Resume downloaded locally!', { id: toastId });
+      }
     } catch (error) {
       console.error('PDF generation error:', error);
       toast.error(`Failed to generate PDF: ${error.message}`, { 
@@ -113,7 +139,7 @@ export const ResumePreview = () => {
             transformOrigin: 'top center'
           }}
         >
-          <TemplateComponent data={resumeData} />
+          <TemplateComponent data={resumeData} colors={colors} />
         </div>
       </div>
     </Card>

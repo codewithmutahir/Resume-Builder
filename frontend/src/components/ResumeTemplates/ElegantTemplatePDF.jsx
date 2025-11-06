@@ -1,150 +1,6 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Svg, Path } from '@react-pdf/renderer';
 
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: '#ffffff',
-    flexDirection: 'row',
-    fontFamily: 'Times-Roman',
-  },
-  sidebar: {
-    width: '35%',
-    backgroundColor: '#1f2937',
-    color: '#f3f4f6',
-    padding: 32,
-  },
-  mainContent: {
-    width: '65%',
-    padding: 32,
-  },
-  sidebarName: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  sidebarTitle: {
-    fontSize: 11,
-    color: '#d1d5db',
-    fontStyle: 'italic',
-    marginBottom: 32,
-  },
-  sidebarSection: {
-    marginBottom: 32,
-  },
-  sidebarSectionTitle: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 12,
-    color: '#9ca3af',
-  },
-  sidebarText: {
-    fontSize: 11,
-    flex: 1,
-  },
-  sidebarSkill: {
-    fontSize: 11,
-    marginBottom: 8,
-  },
-  sidebarCertName: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#f3f4f6',
-    marginBottom: 2,
-  },
-  sidebarCertIssuer: {
-    fontSize: 9,
-    color: '#d1d5db',
-    marginBottom: 2,
-  },
-  sidebarCertDate: {
-    fontSize: 9,
-    color: '#9ca3af',
-    marginBottom: 12,
-  },
-  summary: {
-    fontSize: 11,
-    color: '#1f2937',
-    lineHeight: 1.6,
-    fontStyle: 'italic',
-    borderLeftWidth: 4,
-    borderLeftColor: '#1f2937',
-    paddingLeft: 16,
-    marginBottom: 32,
-  },
-  section: {
-    marginBottom: 32,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 16,
-  },
-  subsection: {
-    marginBottom: 24,
-  },
-  subsectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  subsectionTitle: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 2,
-  },
-  subsectionCompany: {
-    fontSize: 11,
-    color: '#374151',
-    fontStyle: 'italic',
-  },
-  subsectionDate: {
-    fontSize: 11,
-    color: '#4b5563',
-    textAlign: 'right',
-  },
-  subsectionLocation: {
-    fontSize: 11,
-    color: '#4b5563',
-    textAlign: 'right',
-    fontStyle: 'italic',
-  },
-  text: {
-    fontSize: 11,
-    lineHeight: 1.6,
-    color: '#1f2937',
-    marginTop: 8,
-  },
-  refGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-  },
-  refItem: {
-    width: '45%',
-  },
-  refName: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 2,
-  },
-  refTitle: {
-    fontSize: 10,
-    color: '#374151',
-    fontStyle: 'italic',
-    marginBottom: 2,
-  },
-  refDetail: {
-    fontSize: 10,
-    color: '#374151',
-    marginBottom: 2,
-  },
-});
-
 // Icon components
 const MailIcon = () => (
   <Svg width="10" height="10" viewBox="0 0 24 24" style={{ marginRight: 8 }}>
@@ -187,8 +43,160 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const ElegantTemplatePDF = ({ data }) => {
+export const ElegantTemplatePDF = ({ data, colors }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
+  
+  // Use provided colors or fallback to defaults
+  const primaryColor = colors?.primary || '#1f2937';
+  const secondaryColor = colors?.secondary || '#374151';
+  const accentColor = colors?.accent || '#9ca3af';
+  const textColor = colors?.text || '#111827';
+  const textSecondaryColor = colors?.textSecondary || '#374151';
+
+  // Create styles dynamically with colors
+  const styles = StyleSheet.create({
+    page: {
+      backgroundColor: '#ffffff',
+      flexDirection: 'row',
+      fontFamily: 'Times-Roman',
+    },
+    sidebar: {
+      width: '35%',
+      backgroundColor: primaryColor,
+      color: '#f3f4f6',
+      padding: 32,
+    },
+    mainContent: {
+      width: '65%',
+      padding: 32,
+    },
+    sidebarName: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      marginBottom: 8,
+    },
+    sidebarTitle: {
+      fontSize: 11,
+      color: '#d1d5db',
+      fontStyle: 'italic',
+      marginBottom: 32,
+    },
+    sidebarSection: {
+      marginBottom: 32,
+    },
+    sidebarSectionTitle: {
+      fontSize: 11,
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+      marginBottom: 12,
+      color: accentColor,
+    },
+    sidebarText: {
+      fontSize: 11,
+      flex: 1,
+    },
+    sidebarSkill: {
+      fontSize: 11,
+      marginBottom: 8,
+    },
+    sidebarCertName: {
+      fontSize: 11,
+      fontWeight: 'bold',
+      color: '#f3f4f6',
+      marginBottom: 2,
+    },
+    sidebarCertIssuer: {
+      fontSize: 9,
+      color: '#d1d5db',
+      marginBottom: 2,
+    },
+    sidebarCertDate: {
+      fontSize: 9,
+      color: accentColor,
+      marginBottom: 12,
+    },
+    summary: {
+      fontSize: 11,
+      color: textColor,
+      lineHeight: 1.6,
+      fontStyle: 'italic',
+      borderLeftWidth: 4,
+      borderLeftColor: primaryColor,
+      paddingLeft: 16,
+      marginBottom: 32,
+    },
+    section: {
+      marginBottom: 32,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 16,
+    },
+    subsection: {
+      marginBottom: 24,
+    },
+    subsectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+    },
+    subsectionTitle: {
+      fontSize: 13,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 2,
+    },
+    subsectionCompany: {
+      fontSize: 11,
+      color: textSecondaryColor,
+      fontStyle: 'italic',
+    },
+    subsectionDate: {
+      fontSize: 11,
+      color: textSecondaryColor,
+      textAlign: 'right',
+    },
+    subsectionLocation: {
+      fontSize: 11,
+      color: textSecondaryColor,
+      textAlign: 'right',
+      fontStyle: 'italic',
+    },
+    text: {
+      fontSize: 11,
+      lineHeight: 1.6,
+      color: textColor,
+      marginTop: 8,
+    },
+    refGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 16,
+    },
+    refItem: {
+      width: '45%',
+    },
+    refName: {
+      fontSize: 11,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 2,
+    },
+    refTitle: {
+      fontSize: 10,
+      color: textSecondaryColor,
+      fontStyle: 'italic',
+      marginBottom: 2,
+    },
+    refDetail: {
+      fontSize: 10,
+      color: textSecondaryColor,
+      marginBottom: 2,
+    },
+  });
 
   return (
     <Document>
@@ -301,7 +309,7 @@ export const ElegantTemplatePDF = ({ data }) => {
                     <View style={{ flexDirection: 'column', flex: 1 }}>
                       <Text style={styles.subsectionTitle}>{edu.degree}</Text>
                       <Text style={styles.subsectionCompany}>{edu.school}</Text>
-                      {edu.field && <Text style={{ fontSize: 10, color: '#4b5563' }}>{edu.field}</Text>}
+                      {edu.field && <Text style={{ fontSize: 10, color: textSecondaryColor }}>{edu.field}</Text>}
                     </View>
                     <View>
                       <Text style={styles.subsectionDate}>
@@ -323,11 +331,11 @@ export const ElegantTemplatePDF = ({ data }) => {
                 <View key={index} style={{ marginBottom: 16 }}>
                   <Text style={styles.subsectionTitle}>{project.name}</Text>
                   {project.technologies && (
-                    <Text style={{ fontSize: 10, color: '#374151', fontStyle: 'italic' }}>{project.technologies}</Text>
+                    <Text style={{ fontSize: 10, color: textSecondaryColor, fontStyle: 'italic' }}>{project.technologies}</Text>
                   )}
                   {project.description && <Text style={styles.text}>{project.description}</Text>}
                   {project.link && (
-                    <Text style={{ fontSize: 10, color: '#4b5563', marginTop: 4 }}>{project.link}</Text>
+                    <Text style={{ fontSize: 10, color: textSecondaryColor, marginTop: 4 }}>{project.link}</Text>
                   )}
                 </View>
               ))}

@@ -36,6 +36,98 @@ export const ExperienceForm = () => {
     updateExperience(newExperience);
   };
 
+  const handleGenerateDescription = async (index) => {
+    const exp = experience[index];
+    const company = exp.company || 'company';
+    const position = exp.position || 'position';
+    const location = exp.location || '';
+    const startDate = exp.startDate || '';
+    const endDate = exp.current ? 'Present' : (exp.endDate || '');
+    
+    // Check if required fields are provided
+    if (!exp.company || exp.company.trim() === '' || !exp.position || exp.position.trim() === '') {
+      handleChange(index, 'description', "Please enter company name and position first to generate a description.");
+      return;
+    }
+    
+    // Create instruction for the AI model
+    const dateRange = startDate && endDate 
+      ? ` from ${startDate} to ${endDate}`
+      : startDate 
+        ? ` starting ${startDate}`
+        : '';
+    
+    const prompt = `Write 4-5 professional resume bullet points for a ${position} at ${company}${location ? ' in ' + location : ''}${dateRange}. Each bullet point should start with a strong action verb and highlight key responsibilities, achievements, and impact. Make them specific, quantifiable where possible, and suitable for a resume. Format as bullet points with • prefix.`;
+    
+    try {
+      handleChange(index, 'description', "Generating description...");
+      
+      // Get the HF token from environment
+      const HF_TOKEN = process.env.REACT_APP_HF_TOKEN;
+      
+      if (!HF_TOKEN || HF_TOKEN === 'YOUR_HUGGINGFACE_TOKEN_HERE') {
+        handleChange(index, 'description', "Error: HuggingFace API token not configured. Please add REACT_APP_HF_TOKEN to your environment variables and redeploy.");
+        console.error('REACT_APP_HF_TOKEN is not set. Value:', process.env.REACT_APP_HF_TOKEN);
+        return;
+      }
+      
+      const response = await fetch(
+        "https://router.huggingface.co/v1/chat/completions",
+        {
+          headers: {
+            Authorization: `Bearer ${HF_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify({
+            model: "mistralai/Mistral-7B-Instruct-v0.2:featherless-ai",
+            messages: [
+              { role: "user", content: prompt }
+            ],
+            max_tokens: 250,
+            temperature: 0.7,
+            top_p: 0.9,
+          })
+        }
+      );
+      
+      // Clone response before reading
+      const resClone = response.clone();
+
+      // Check if response is ok before parsing
+      if (!response.ok) {
+        const errorText = await resClone.text();
+        console.error('HuggingFace API Error:', response.status, errorText);
+        
+        if (response.status === 401) {
+          handleChange(index, 'description', "Authentication error: Invalid HuggingFace API token. Please check your token.");
+        } else if (response.status === 503) {
+          handleChange(index, 'description', "Model is loading. Please wait a moment and try again.");
+        } else {
+          handleChange(index, 'description', `Error: ${response.status}. Please try again.`);
+        }
+        return;
+      }
+      
+      // Parse successful response
+      const data = await response.json();
+
+      // ✅ HuggingFace chat response format
+      const generatedDescription = data?.choices?.[0]?.message?.content?.trim();
+
+      if (generatedDescription) {
+        handleChange(index, 'description', generatedDescription);
+      } else {
+        console.error('Unexpected response format:', data);
+        handleChange(index, 'description', "Could not generate description. Please try again.");
+      }
+
+    } catch (err) {
+      console.error('Error generating description:', err);
+      handleChange(index, 'description', `Error: ${err.message}. Please check your internet connection.`);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="mb-4">
@@ -121,7 +213,17 @@ export const ExperienceForm = () => {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label>Description *</Label>
+              <Label>
+                Description *{" "}
+                <button
+                  type="button"
+                  className="ml-2 text-xs underline text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => handleGenerateDescription(index)}
+                  disabled={!exp.company || exp.company.trim() === '' || !exp.position || exp.position.trim() === ''}
+                >
+                  Generate with AI
+                </button>
+              </Label>
               <Textarea
                 placeholder="• Led a team of 5 developers...\n• Improved system performance by 40%...\n• Implemented new features that increased user engagement..."
                 className="min-h-[120px]"
@@ -129,6 +231,9 @@ export const ExperienceForm = () => {
                 onChange={(e) => handleChange(index, 'description', e.target.value)}
               />
               <p className="text-xs text-muted-foreground">Use bullet points to describe your responsibilities and achievements</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                <span className="font-medium">Tip:</span> Enter company name and position, then click "Generate with AI" to create professional bullet points.
+              </p>
             </div>
           </div>
         </Card>

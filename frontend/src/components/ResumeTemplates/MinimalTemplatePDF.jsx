@@ -1,106 +1,6 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: '#ffffff',
-    padding: 48,
-    fontFamily: 'Helvetica',
-  },
-  header: {
-    marginBottom: 32,
-  },
-  name: {
-    fontSize: 36,
-    fontWeight: 'light',
-    marginBottom: 4,
-    letterSpacing: -0.5,
-  },
-  title: {
-    fontSize: 13,
-    color: '#4b5563',
-    fontWeight: 'light',
-  },
-  contactInfo: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 16,
-    fontSize: 11,
-    color: '#4b5563',
-  },
-  contactItem: {
-    marginRight: 12,
-  },
-  section: {
-    marginBottom: 32,
-  },
-  sectionTitle: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#6b7280',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 16,
-  },
-  summaryText: {
-    fontSize: 11,
-    lineHeight: 1.6,
-    color: '#374151',
-  },
-  subsection: {
-    marginBottom: 24,
-  },
-  subsectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  subsectionTitle: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 2,
-  },
-  subsectionCompany: {
-    fontSize: 11,
-    color: '#4b5563',
-  },
-  subsectionDate: {
-    fontSize: 11,
-    color: '#6b7280',
-    textAlign: 'right',
-  },
-  text: {
-    fontSize: 10,
-    lineHeight: 1.6,
-    color: '#374151',
-    marginTop: 8,
-  },
-  skillsText: {
-    fontSize: 11,
-    color: '#374151',
-  },
-  refGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-  },
-  refItem: {
-    width: '45%',
-  },
-  refName: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 2,
-  },
-  refDetail: {
-    fontSize: 10,
-    color: '#4b5563',
-    marginBottom: 2,
-  },
-});
-
 const formatDate = (dateString) => {
   if (!dateString) return '';
   const [year, month] = dateString.split('-');
@@ -108,8 +8,116 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const MinimalTemplatePDF = ({ data }) => {
+export const MinimalTemplatePDF = ({ data, colors }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
+  
+  // Use provided colors or fallback to defaults
+  const primaryColor = colors?.primary || '#6b7280';
+  const secondaryColor = colors?.secondary || '#4b5563';
+  const accentColor = colors?.accent || '#9ca3af';
+  const textColor = colors?.text || '#111827';
+  const textSecondaryColor = colors?.textSecondary || '#374151';
+
+  // Create styles dynamically with colors
+  const styles = StyleSheet.create({
+    page: {
+      backgroundColor: '#ffffff',
+      padding: 48,
+      fontFamily: 'Helvetica',
+    },
+    header: {
+      marginBottom: 32,
+    },
+    name: {
+      fontSize: 36,
+      fontWeight: 'light',
+      marginBottom: 4,
+      letterSpacing: -0.5,
+    },
+    title: {
+      fontSize: 13,
+      color: secondaryColor,
+      fontWeight: 'light',
+    },
+    contactInfo: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginTop: 16,
+      fontSize: 11,
+      color: secondaryColor,
+    },
+    contactItem: {
+      marginRight: 12,
+    },
+    section: {
+      marginBottom: 32,
+    },
+    sectionTitle: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      color: primaryColor,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      marginBottom: 16,
+    },
+    summaryText: {
+      fontSize: 11,
+      lineHeight: 1.6,
+      color: textSecondaryColor,
+    },
+    subsection: {
+      marginBottom: 24,
+    },
+    subsectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+    },
+    subsectionTitle: {
+      fontSize: 13,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 2,
+    },
+    subsectionCompany: {
+      fontSize: 11,
+      color: secondaryColor,
+    },
+    subsectionDate: {
+      fontSize: 11,
+      color: primaryColor,
+      textAlign: 'right',
+    },
+    text: {
+      fontSize: 10,
+      lineHeight: 1.6,
+      color: textSecondaryColor,
+      marginTop: 8,
+    },
+    skillsText: {
+      fontSize: 11,
+      color: textSecondaryColor,
+    },
+    refGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 16,
+    },
+    refItem: {
+      width: '45%',
+    },
+    refName: {
+      fontSize: 11,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 2,
+    },
+    refDetail: {
+      fontSize: 10,
+      color: secondaryColor,
+      marginBottom: 2,
+    },
+  });
 
   return (
     <Document>
@@ -169,7 +177,7 @@ export const MinimalTemplatePDF = ({ data }) => {
                   <View style={{ flexDirection: 'column', flex: 1 }}>
                     <Text style={styles.subsectionTitle}>{edu.degree}</Text>
                     <Text style={styles.subsectionCompany}>{edu.school}</Text>
-                    {edu.field && <Text style={{ fontSize: 10, color: '#6b7280' }}>{edu.field}</Text>}
+                    {edu.field && <Text style={{ fontSize: 10, color: primaryColor }}>{edu.field}</Text>}
                   </View>
                   <View>
                     <Text style={styles.subsectionDate}>
@@ -199,11 +207,11 @@ export const MinimalTemplatePDF = ({ data }) => {
               <View key={index} style={{ marginBottom: 16 }}>
                 <Text style={styles.subsectionTitle}>{project.name}</Text>
                 {project.technologies && (
-                  <Text style={{ fontSize: 10, color: '#4b5563' }}>{project.technologies}</Text>
+                  <Text style={{ fontSize: 10, color: secondaryColor }}>{project.technologies}</Text>
                 )}
                 {project.description && <Text style={styles.text}>{project.description}</Text>}
                 {project.link && (
-                  <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 4 }}>{project.link}</Text>
+                  <Text style={{ fontSize: 10, color: primaryColor, marginTop: 4 }}>{project.link}</Text>
                 )}
               </View>
             ))}
@@ -216,12 +224,12 @@ export const MinimalTemplatePDF = ({ data }) => {
             <Text style={styles.sectionTitle}>Certifications</Text>
             {certifications.map((cert, index) => (
               <View key={index} style={{ marginBottom: 12 }}>
-                <Text style={{ fontSize: 11, fontWeight: 'bold', color: '#111827' }}>{cert.name}</Text>
-                <Text style={{ fontSize: 10, color: '#4b5563' }}>
+                <Text style={{ fontSize: 11, fontWeight: 'bold', color: textColor }}>{cert.name}</Text>
+                <Text style={{ fontSize: 10, color: secondaryColor }}>
                   {cert.issuer} {cert.date && `• ${formatDate(cert.date)}`}
                 </Text>
                 {cert.credentialId && (
-                  <Text style={{ fontSize: 9, color: '#6b7280' }}>ID: {cert.credentialId}</Text>
+                  <Text style={{ fontSize: 9, color: primaryColor }}>ID: {cert.credentialId}</Text>
                 )}
               </View>
             ))}
@@ -239,7 +247,7 @@ export const MinimalTemplatePDF = ({ data }) => {
                   <Text style={styles.refDetail}>{ref.title}</Text>
                   <Text style={styles.refDetail}>{ref.company}</Text>
                   {ref.email && <Text style={styles.refDetail}>{ref.email}</Text>}
-                  {ref.phone && <Text style={styles.refDetail}>{ref.phone}</Text>}
+                  {ref.phone && <Text style={{ fontSize: 10, color: primaryColor }}>{ref.phone}</Text>}
                 </View>
               ))}
             </View>

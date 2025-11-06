@@ -1,122 +1,6 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Svg, Path } from '@react-pdf/renderer';
 
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: '#ffffff',
-    padding: 0,
-    fontFamily: 'Helvetica',
-  },
-  header: {
-    backgroundColor: '#2563eb',
-    color: '#ffffff',
-    padding: 32,
-  },
-  name: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 6,
-  },
-  title: {
-    fontSize: 16,
-    color: '#dbeafe',
-    marginBottom: 16,
-  },
-  contactInfo: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 16,
-    fontSize: 11,
-  },
-  contactItem: {
-    fontSize: 11,
-  },
-  content: {
-    padding: 32,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1e40af',
-    paddingBottom: 8,
-    borderBottomWidth: 2,
-    borderBottomColor: '#2563eb',
-    marginBottom: 12,
-  },
-  subsection: {
-    marginBottom: 16,
-  },
-  subsectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  },
-  subsectionTitle: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 2,
-  },
-  subsectionCompany: {
-    fontSize: 11,
-    color: '#1d4ed8',
-    fontWeight: 'bold',
-  },
-  subsectionDate: {
-    fontSize: 11,
-    color: '#4b5563',
-    textAlign: 'right',
-  },
-  subsectionLocation: {
-    fontSize: 11,
-    color: '#4b5563',
-    textAlign: 'right',
-  },
-  text: {
-    fontSize: 11,
-    lineHeight: 1.6,
-    color: '#374151',
-    marginTop: 8,
-  },
-  skillsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 8,
-  },
-  skillBadge: {
-    backgroundColor: '#dbeafe',
-    color: '#1e40af',
-    fontSize: 11,
-    fontWeight: 'bold',
-    padding: '6 16',
-    borderRadius: 100,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  refGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-  },
-  refItem: {
-    width: '45%',
-  },
-  refName: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 2,
-  },
-  refDetail: {
-    fontSize: 10,
-    color: '#374151',
-    marginBottom: 2,
-  },
-});
-
 // Icon components
 const MailIcon = () => (
   <Svg width="10" height="10" viewBox="0 0 24 24" style={{ marginRight: 4 }}>
@@ -159,8 +43,132 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const ModernTemplatePDF = ({ data }) => {
+export const ModernTemplatePDF = ({ data, colors }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
+  
+  // Use provided colors or fallback to defaults
+  const primaryColor = colors?.primary || '#2563eb';
+  const secondaryColor = colors?.secondary || '#1e40af';
+  const accentColor = colors?.accent || '#dbeafe';
+  const textColor = colors?.text || '#111827';
+  const textSecondaryColor = colors?.textSecondary || '#374151';
+
+  // Create styles dynamically with colors
+  const styles = StyleSheet.create({
+    page: {
+      backgroundColor: '#ffffff',
+      padding: 0,
+      fontFamily: 'Helvetica',
+    },
+    header: {
+      backgroundColor: primaryColor,
+      color: '#ffffff',
+      padding: 32,
+    },
+    name: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      marginBottom: 6,
+    },
+    title: {
+      fontSize: 16,
+      color: accentColor,
+      marginBottom: 16,
+    },
+    contactInfo: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginTop: 16,
+      fontSize: 11,
+    },
+    contactItem: {
+      fontSize: 11,
+    },
+    content: {
+      padding: 32,
+    },
+    section: {
+      marginBottom: 24,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: secondaryColor,
+      paddingBottom: 8,
+      borderBottomWidth: 2,
+      borderBottomColor: primaryColor,
+      marginBottom: 12,
+    },
+    subsection: {
+      marginBottom: 16,
+    },
+    subsectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 4,
+    },
+    subsectionTitle: {
+      fontSize: 13,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 2,
+    },
+    subsectionCompany: {
+      fontSize: 11,
+      color: secondaryColor,
+      fontWeight: 'bold',
+    },
+    subsectionDate: {
+      fontSize: 11,
+      color: textSecondaryColor,
+      textAlign: 'right',
+    },
+    subsectionLocation: {
+      fontSize: 11,
+      color: textSecondaryColor,
+      textAlign: 'right',
+    },
+    text: {
+      fontSize: 11,
+      lineHeight: 1.6,
+      color: textSecondaryColor,
+      marginTop: 8,
+    },
+    skillsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginTop: 8,
+    },
+    skillBadge: {
+      backgroundColor: accentColor,
+      color: secondaryColor,
+      fontSize: 11,
+      fontWeight: 'bold',
+      padding: '6 16',
+      borderRadius: 100,
+      marginRight: 8,
+      marginBottom: 8,
+    },
+    refGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 16,
+    },
+    refItem: {
+      width: '45%',
+    },
+    refName: {
+      fontSize: 11,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 2,
+    },
+    refDetail: {
+      fontSize: 10,
+      color: textSecondaryColor,
+      marginBottom: 2,
+    },
+  });
 
   return (
     <Document>
@@ -247,7 +255,7 @@ export const ModernTemplatePDF = ({ data }) => {
                     <View style={{ flexDirection: 'column', flex: 1 }}>
                       <Text style={styles.subsectionTitle}>{edu.degree}</Text>
                       <Text style={styles.subsectionCompany}>{edu.school}</Text>
-                      {edu.field && <Text style={{ fontSize: 10, color: '#4b5563' }}>{edu.field}</Text>}
+                      {edu.field && <Text style={{ fontSize: 10, color: textSecondaryColor }}>{edu.field}</Text>}
                     </View>
                     <View>
                       <Text style={styles.subsectionDate}>
@@ -281,11 +289,11 @@ export const ModernTemplatePDF = ({ data }) => {
                 <View key={index} style={styles.subsection}>
                   <Text style={styles.subsectionTitle}>{project.name}</Text>
                   {project.technologies && (
-                    <Text style={{ fontSize: 10, color: '#1d4ed8' }}>{project.technologies}</Text>
+                    <Text style={{ fontSize: 10, color: secondaryColor }}>{project.technologies}</Text>
                   )}
                   {project.description && <Text style={styles.text}>{project.description}</Text>}
                   {project.link && (
-                    <Text style={{ fontSize: 10, color: '#2563eb', marginTop: 4 }}>{project.link}</Text>
+                    <Text style={{ fontSize: 10, color: primaryColor, marginTop: 4 }}>{project.link}</Text>
                   )}
                 </View>
               ))}
@@ -303,7 +311,7 @@ export const ModernTemplatePDF = ({ data }) => {
                     {cert.issuer} {cert.date && `• ${formatDate(cert.date)}`}
                   </Text>
                   {cert.credentialId && (
-                    <Text style={{ fontSize: 10, color: '#4b5563' }}>Credential ID: {cert.credentialId}</Text>
+                    <Text style={{ fontSize: 10, color: textSecondaryColor }}>Credential ID: {cert.credentialId}</Text>
                   )}
                 </View>
               ))}
@@ -320,7 +328,7 @@ export const ModernTemplatePDF = ({ data }) => {
                     <Text style={styles.refName}>{ref.name}</Text>
                     <Text style={styles.refDetail}>{ref.title}</Text>
                     <Text style={styles.refDetail}>{ref.company}</Text>
-                    {ref.email && <Text style={{ fontSize: 10, color: '#2563eb' }}>{ref.email}</Text>}
+                    {ref.email && <Text style={{ fontSize: 10, color: primaryColor }}>{ref.email}</Text>}
                     {ref.phone && <Text style={styles.refDetail}>{ref.phone}</Text>}
                   </View>
                 ))}

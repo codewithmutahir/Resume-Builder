@@ -1,167 +1,6 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Svg, Path } from '@react-pdf/renderer';
 
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: '#faf5ff',
-    padding: 0,
-    fontFamily: 'Helvetica',
-  },
-  header: {
-    backgroundColor: '#9333ea',
-    color: '#ffffff',
-    padding: 32,
-  },
-  name: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 18,
-    color: '#e9d5ff',
-    marginBottom: 16,
-  },
-  contactInfo: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 16,
-    fontSize: 11,
-  },
-  contactItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    padding: '4 12',
-    borderRadius: 100,
-    marginRight: 8,
-    marginBottom: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  content: {
-    padding: 32,
-  },
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 24,
-    marginBottom: 24,
-  },
-  cardNoBreak: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 24,
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#9333ea',
-    marginBottom: 16,
-  },
-  summaryText: {
-    fontSize: 11,
-    lineHeight: 1.6,
-    color: '#374151',
-  },
-  subsection: {
-    marginBottom: 24,
-    paddingLeft: 24,
-    borderLeftWidth: 4,
-    borderLeftColor: '#9333ea',
-    position: 'relative',
-  },
-  subsectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  subsectionTitle: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 2,
-  },
-  subsectionCompany: {
-    fontSize: 11,
-    color: '#7c3aed',
-    fontWeight: 'bold',
-  },
-  subsectionDate: {
-    fontSize: 11,
-    color: '#4b5563',
-    textAlign: 'right',
-  },
-  text: {
-    fontSize: 11,
-    lineHeight: 1.6,
-    color: '#374151',
-    marginTop: 8,
-  },
-  skillsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  skillBadge: {
-    backgroundColor: '#f3e8ff',
-    color: '#6b21a8',
-    fontSize: 11,
-    fontWeight: 'bold',
-    padding: '8 16',
-    borderRadius: 100,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 24,
-  },
-  gridItem: {
-    width: '47%',
-  },
-  projectItem: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#9333ea',
-    paddingLeft: 16,
-    width: '47%',
-  },
-  certItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  certDot: {
-    width: 8,
-    height: 8,
-    backgroundColor: '#9333ea',
-    borderRadius: 4,
-    marginTop: 8,
-    marginRight: 12,
-  },
-  refGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-  },
-  refItem: {
-    width: '45%',
-    borderLeftWidth: 4,
-    borderLeftColor: '#2563eb',
-    paddingLeft: 16,
-  },
-  refName: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 2,
-  },
-  refDetail: {
-    fontSize: 10,
-    color: '#374151',
-    marginBottom: 2,
-  },
-});
-
 // Icon components
 const MailIcon = () => (
   <Svg width="10" height="10" viewBox="0 0 24 24" style={{ marginRight: 4 }}>
@@ -204,12 +43,182 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const CreativeTemplatePDF = ({ data }) => {
+export const CreativeTemplatePDF = ({ data, colors }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
+  
+  // Use provided colors or fallback to defaults
+  const primaryColor = colors?.primary || '#9333ea';
+  const secondaryColor = colors?.secondary || '#7c3aed';
+  const accentColor = colors?.accent || '#2563eb';
+  const textColor = colors?.text || '#111827';
+  const textSecondaryColor = colors?.textSecondary || '#374151';
+
+  // Create styles dynamically with colors
+  const styles = StyleSheet.create({
+    page: {
+      backgroundColor: '#faf5ff',
+      padding: 0,
+      fontFamily: 'Helvetica',
+      flexDirection: 'column',
+    },
+    header: {
+      backgroundColor: primaryColor,
+      color: '#ffffff',
+      padding: 20,
+    },
+    name: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      marginBottom: 4,
+    },
+    title: {
+      fontSize: 16,
+      color: '#e9d5ff',
+      marginBottom: 8,
+    },
+    contactInfo: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginTop: 8,
+      fontSize: 10,
+    },
+    contactItem: {
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      padding: '3 10',
+      borderRadius: 100,
+      marginRight: 6,
+      marginBottom: 6,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    content: {
+      padding: 20,
+    },
+    card: {
+      backgroundColor: '#ffffff',
+      borderRadius: 8,
+      padding: 16,
+      marginBottom: 12,
+      breakInside: 'avoid',
+    },
+    sectionTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: primaryColor,
+      marginBottom: 10,
+    },
+    summaryText: {
+      fontSize: 10,
+      lineHeight: 1.4,
+      color: textSecondaryColor,
+    },
+    subsection: {
+      marginBottom: 12,
+      paddingLeft: 16,
+      borderLeftWidth: 3,
+      borderLeftColor: primaryColor,
+      position: 'relative',
+      breakInside: 'avoid',
+    },
+    subsectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+    },
+    subsectionTitle: {
+      fontSize: 13,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 2,
+    },
+    subsectionCompany: {
+      fontSize: 11,
+      color: secondaryColor,
+      fontWeight: 'bold',
+    },
+    subsectionDate: {
+      fontSize: 11,
+      color: textSecondaryColor,
+      textAlign: 'right',
+    },
+    text: {
+      fontSize: 11,
+      lineHeight: 1.6,
+      color: textSecondaryColor,
+      marginTop: 8,
+    },
+    skillsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
+    skillBadge: {
+      backgroundColor: '#f3e8ff',
+      color: secondaryColor,
+      fontSize: 11,
+      fontWeight: 'bold',
+      padding: '8 16',
+      borderRadius: 100,
+      marginRight: 8,
+      marginBottom: 8,
+    },
+    gridContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 24,
+    },
+    gridItem: {
+      width: '47%',
+    },
+    projectItem: {
+      borderLeftWidth: 4,
+      borderLeftColor: primaryColor,
+      paddingLeft: 16,
+      width: '47%',
+      marginBottom: 12,
+      breakInside: 'avoid',
+    },
+    certItem: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      marginBottom: 12,
+      breakInside: 'avoid',
+    },
+    certDot: {
+      width: 8,
+      height: 8,
+      backgroundColor: primaryColor,
+      borderRadius: 4,
+      marginTop: 8,
+      marginRight: 12,
+    },
+    refGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 16,
+    },
+    refItem: {
+      width: '45%',
+      borderLeftWidth: 4,
+      borderLeftColor: accentColor,
+      paddingLeft: 16,
+      breakInside: 'avoid',
+    },
+    refName: {
+      fontSize: 11,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 2,
+    },
+    refDetail: {
+      fontSize: 10,
+      color: textSecondaryColor,
+      marginBottom: 2,
+    },
+  });
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.name}>{personal?.fullName || 'Your Name'}</Text>
@@ -252,7 +261,7 @@ export const CreativeTemplatePDF = ({ data }) => {
         <View style={styles.content}>
           {/* Summary */}
           {personal?.summary && (
-            <View style={styles.card} wrap={false}>
+            <View style={styles.card}>
               <Text style={styles.sectionTitle}>About Me</Text>
               <Text style={styles.summaryText}>{personal.summary}</Text>
             </View>
@@ -260,7 +269,7 @@ export const CreativeTemplatePDF = ({ data }) => {
 
           {/* Experience */}
           {experience && experience.length > 0 && (
-            <View style={styles.card} wrap={false}>
+            <View style={styles.card}>
               <Text style={styles.sectionTitle}>Experience</Text>
               {experience.map((exp, index) => (
                 <View key={index} style={styles.subsection}>
@@ -283,7 +292,7 @@ export const CreativeTemplatePDF = ({ data }) => {
           )}
 
           {/* Skills & Education Grid */}
-          <View style={styles.gridContainer} wrap={false}>
+          <View style={styles.gridContainer}>
             {/* Skills */}
             {skills && skills.length > 0 && (
               <View style={[styles.card, styles.gridItem]}>
@@ -304,8 +313,8 @@ export const CreativeTemplatePDF = ({ data }) => {
                   <View key={index} style={{ marginBottom: 16 }}>
                     <Text style={styles.subsectionTitle}>{edu.degree}</Text>
                     <Text style={styles.subsectionCompany}>{edu.school}</Text>
-                    {edu.field && <Text style={{ fontSize: 10, color: '#4b5563' }}>{edu.field}</Text>}
-                    <Text style={{ fontSize: 9, color: '#6b7280', marginTop: 4 }}>
+                    {edu.field && <Text style={{ fontSize: 10, color: textSecondaryColor }}>{edu.field}</Text>}
+                    <Text style={{ fontSize: 9, color: textSecondaryColor, marginTop: 4 }}>
                       {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                     </Text>
                   </View>
@@ -316,20 +325,20 @@ export const CreativeTemplatePDF = ({ data }) => {
 
           {/* Projects */}
           {projects && projects.length > 0 && (
-            <View style={styles.card} wrap={false}>
+            <View style={styles.card}>
               <Text style={styles.sectionTitle}>Projects</Text>
               <View style={styles.gridContainer}>
                 {projects.map((project, index) => (
                   <View key={index} style={styles.projectItem}>
                     <Text style={styles.subsectionTitle}>{project.name}</Text>
                     {project.technologies && (
-                      <Text style={{ fontSize: 10, color: '#7c3aed' }}>{project.technologies}</Text>
+                      <Text style={{ fontSize: 10, color: secondaryColor }}>{project.technologies}</Text>
                     )}
                     {project.description && (
-                      <Text style={{ fontSize: 10, color: '#374151', marginTop: 4 }}>{project.description}</Text>
+                      <Text style={{ fontSize: 10, color: textSecondaryColor, marginTop: 4 }}>{project.description}</Text>
                     )}
                     {project.link && (
-                      <Text style={{ fontSize: 10, color: '#2563eb', marginTop: 4 }}>{project.link}</Text>
+                      <Text style={{ fontSize: 10, color: accentColor, marginTop: 4 }}>{project.link}</Text>
                     )}
                   </View>
                 ))}
@@ -339,18 +348,18 @@ export const CreativeTemplatePDF = ({ data }) => {
 
           {/* Certifications */}
           {certifications && certifications.length > 0 && (
-            <View style={styles.card} wrap={false}>
+            <View style={styles.card}>
               <Text style={styles.sectionTitle}>Certifications</Text>
               {certifications.map((cert, index) => (
                 <View key={index} style={styles.certItem}>
                   <View style={styles.certDot} />
                   <View>
-                    <Text style={{ fontSize: 11, fontWeight: 'bold', color: '#111827' }}>{cert.name}</Text>
-                    <Text style={{ fontSize: 10, color: '#7c3aed' }}>
+                    <Text style={{ fontSize: 11, fontWeight: 'bold', color: textColor }}>{cert.name}</Text>
+                    <Text style={{ fontSize: 10, color: secondaryColor }}>
                       {cert.issuer} {cert.date && `• ${formatDate(cert.date)}`}
                     </Text>
                     {cert.credentialId && (
-                      <Text style={{ fontSize: 9, color: '#4b5563' }}>ID: {cert.credentialId}</Text>
+                      <Text style={{ fontSize: 9, color: textSecondaryColor }}>ID: {cert.credentialId}</Text>
                     )}
                   </View>
                 </View>
@@ -360,7 +369,7 @@ export const CreativeTemplatePDF = ({ data }) => {
 
           {/* References */}
           {references && references.length > 0 && (
-            <View style={styles.card} wrap={false}>
+            <View style={styles.card}>
               <Text style={styles.sectionTitle}>References</Text>
               <View style={styles.refGrid}>
                 {references.map((ref, index) => (
@@ -368,7 +377,7 @@ export const CreativeTemplatePDF = ({ data }) => {
                     <Text style={styles.refName}>{ref.name}</Text>
                     <Text style={styles.refDetail}>{ref.title}</Text>
                     <Text style={styles.refDetail}>{ref.company}</Text>
-                    {ref.email && <Text style={{ fontSize: 10, color: '#2563eb' }}>{ref.email}</Text>}
+                    {ref.email && <Text style={{ fontSize: 10, color: accentColor }}>{ref.email}</Text>}
                     {ref.phone && <Text style={styles.refDetail}>{ref.phone}</Text>}
                   </View>
                 ))}

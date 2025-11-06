@@ -8,18 +8,25 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const CreativeTemplate = ({ data }) => {
+export const CreativeTemplate = ({ data, colors }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
+  
+  // Use provided colors or fallback to defaults
+  const primaryColor = colors?.primary || '#9333ea';
+  const secondaryColor = colors?.secondary || '#7c3aed';
+  const accentColor = colors?.accent || '#2563eb';
+  const textColor = colors?.text || '#111827';
+  const textSecondaryColor = colors?.textSecondary || '#374151';
 
   return (
-    <div style={{ background: 'linear-gradient(135deg, #faf5ff 0%, #eff6ff 100%)', color: '#111827', minHeight: '100%', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ background: 'linear-gradient(135deg, #faf5ff 0%, #eff6ff 100%)', color: textColor, minHeight: '100%', fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
-      <div style={{ background: '#9333ea', color: 'white', padding: '32px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: primaryColor, color: 'white', padding: '24px 32px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'relative', zIndex: 10 }}>
-          <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '8px' }}>{personal.fullName || 'Your Name'}</h1>
-          <p style={{ fontSize: '1.5rem', color: '#e9d5ff', marginBottom: '16px' }}>{personal.title || 'Professional Title'}</p>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '6px' }}>{personal.fullName || 'Your Name'}</h1>
+          <p style={{ fontSize: '1.25rem', color: '#e9d5ff', marginBottom: '12px' }}>{personal.title || 'Professional Title'}</p>
           
-          <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '16px', fontSize: '0.875rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '12px', fontSize: '0.875rem' }}>
             {personal.email && (
               <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.2)', padding: '4px 12px', borderRadius: '9999px', marginRight: '8px', marginBottom: '8px' }}>
                 <Mail className="w-4 h-4" style={{ marginRight: '4px' }} />
@@ -56,39 +63,41 @@ export const CreativeTemplate = ({ data }) => {
         <div style={{ position: 'absolute', bottom: 0, left: 0, width: '192px', height: '192px', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '9999px', marginLeft: '-96px', marginBottom: '-96px' }}></div>
       </div>
 
-      <div style={{ padding: '32px' }}>
+      <div style={{ padding: '24px 32px' }}>
         {/* Summary */}
         {personal.summary && (
-          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', background: 'linear-gradient(to right, #9333ea, #2563eb)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: '12px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginBottom: '18px' }}>
+            <div style={{ background: `linear-gradient(to right, ${primaryColor}, ${accentColor})`, height: '4px', borderRadius: '2px', marginBottom: '10px' }}></div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: primaryColor, marginBottom: '10px' }}>
               About Me
             </h2>
-            <p style={{ color: '#374151', lineHeight: '1.625' }}>{personal.summary}</p>
+            <p style={{ color: textSecondaryColor, lineHeight: '1.5', fontSize: '0.9rem' }}>{personal.summary}</p>
           </div>
         )}
 
         {/* Experience */}
         {experience.length > 0 && (
-          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', background: 'linear-gradient(to right, #9333ea, #2563eb)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: '16px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginBottom: '18px' }}>
+            <div style={{ background: `linear-gradient(to right, ${primaryColor}, ${accentColor})`, height: '4px', borderRadius: '2px', marginBottom: '12px' }}></div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: primaryColor, marginBottom: '12px' }}>
               Experience
             </h2>
             <div>
               {experience.map((exp, index) => (
-                <div key={index} style={{ position: 'relative', paddingLeft: '24px', borderLeft: '4px solid #9333ea', marginBottom: index < experience.length - 1 ? '24px' : '0' }}>
-                  <div style={{ position: 'absolute', left: 0, top: 0, width: '12px', height: '12px', backgroundColor: '#9333ea', borderRadius: '9999px', marginLeft: '-8px', marginTop: '4px' }}></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                <div key={index} style={{ position: 'relative', paddingLeft: '20px', borderLeft: `4px solid ${primaryColor}`, marginBottom: index < experience.length - 1 ? '16px' : '0' }}>
+                  <div style={{ position: 'absolute', left: 0, top: 0, width: '10px', height: '10px', backgroundColor: primaryColor, borderRadius: '9999px', marginLeft: '-7px', marginTop: '4px' }}></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
                     <div>
-                      <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#111827' }}>{exp.position}</h3>
-                      <p style={{ color: '#7c3aed', fontWeight: '500' }}>{exp.company}</p>
+                      <h3 style={{ fontSize: '1rem', fontWeight: '600', color: textColor }}>{exp.position}</h3>
+                      <p style={{ color: secondaryColor, fontWeight: '500', fontSize: '0.875rem' }}>{exp.company}</p>
                     </div>
-                    <div style={{ textAlign: 'right', fontSize: '0.875rem', color: '#4b5563' }}>
+                    <div style={{ textAlign: 'right', fontSize: '0.8rem', color: textSecondaryColor }}>
                       <p>{formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}</p>
                       {exp.location && <p>{exp.location}</p>}
                     </div>
                   </div>
                   {exp.description && (
-                    <div style={{ color: '#374151', marginTop: '8px', whiteSpace: 'pre-line' }}>{exp.description}</div>
+                    <div style={{ color: textSecondaryColor, marginTop: '6px', whiteSpace: 'pre-line', fontSize: '0.875rem', lineHeight: '1.5' }}>{exp.description}</div>
                   )}
                 </div>
               ))}
@@ -97,28 +106,27 @@ export const CreativeTemplate = ({ data }) => {
         )}
 
         {/* Skills & Education Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: education.length > 0 ? '1fr 1fr' : '1fr', gap: '24px', marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: education.length > 0 ? '1fr 1fr' : '1fr', gap: '18px', marginBottom: '18px' }}>
           {/* Skills */}
           {skills.length > 0 && (
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', background: 'linear-gradient(to right, #9333ea, #2563eb)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: '16px' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+              <div style={{ background: `linear-gradient(to right, ${primaryColor}, ${accentColor})`, height: '4px', borderRadius: '2px', marginBottom: '12px' }}></div>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: primaryColor, marginBottom: '12px' }}>
                 Skills
               </h2>
-              <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {skills.map((skill, index) => (
                   <span
                     key={index}
                     style={{ 
-                      background: 'linear-gradient(to right, #f3e8ff, #dbeafe)',
-                      color: '#6b21a8',
-                      fontSize: '0.875rem',
+                      backgroundColor: accentColor,
+                      color: primaryColor,
+                      fontSize: '0.8rem',
                       fontWeight: '500',
                       borderRadius: '9999px', 
                       display: 'inline-block',
-                      padding: '8px 16px',
+                      padding: '6px 12px',
                       lineHeight: '1',
-                      marginRight: '8px',
-                      marginBottom: '8px'
                     }}
                   >
                     {skill}
@@ -130,17 +138,18 @@ export const CreativeTemplate = ({ data }) => {
 
           {/* Education */}
           {education.length > 0 && (
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', background: 'linear-gradient(to right, #9333ea, #2563eb)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: '16px' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+              <div style={{ background: `linear-gradient(to right, ${primaryColor}, ${accentColor})`, height: '4px', borderRadius: '2px', marginBottom: '12px' }}></div>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: primaryColor, marginBottom: '12px' }}>
                 Education
               </h2>
               <div>
                 {education.map((edu, index) => (
-                  <div key={index} style={{ marginBottom: index < education.length - 1 ? '16px' : '0' }}>
-                    <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#111827' }}>{edu.degree}</h3>
-                    <p style={{ color: '#7c3aed', fontWeight: '500', fontSize: '0.875rem' }}>{edu.school}</p>
-                    {edu.field && <p style={{ color: '#4b5563', fontSize: '0.875rem' }}>{edu.field}</p>}
-                    <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '4px' }}>
+                  <div key={index} style={{ marginBottom: index < education.length - 1 ? '12px' : '0' }}>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: '600', color: textColor }}>{edu.degree}</h3>
+                    <p style={{ color: secondaryColor, fontWeight: '500', fontSize: '0.8rem' }}>{edu.school}</p>
+                    {edu.field && <p style={{ color: textSecondaryColor, fontSize: '0.8rem' }}>{edu.field}</p>}
+                    <p style={{ fontSize: '0.75rem', color: textSecondaryColor, marginTop: '2px' }}>
                       {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                     </p>
                   </div>
@@ -152,20 +161,21 @@ export const CreativeTemplate = ({ data }) => {
 
         {/* Projects */}
         {projects.length > 0 && (
-          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', background: 'linear-gradient(to right, #9333ea, #2563eb)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: '16px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginBottom: '18px' }}>
+            <div style={{ background: `linear-gradient(to right, ${primaryColor}, ${accentColor})`, height: '4px', borderRadius: '2px', marginBottom: '12px' }}></div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: primaryColor, marginBottom: '12px' }}>
               Projects
             </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
               {projects.map((project, index) => (
-                <div key={index} style={{ borderLeft: '4px solid #9333ea', paddingLeft: '16px' }}>
-                  <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#111827' }}>{project.name}</h3>
+                <div key={index} style={{ borderLeft: `4px solid ${primaryColor}`, paddingLeft: '12px' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '600', color: textColor }}>{project.name}</h3>
                   {project.technologies && (
-                    <p style={{ fontSize: '0.875rem', color: '#7c3aed' }}>{project.technologies}</p>
+                    <p style={{ fontSize: '0.8rem', color: secondaryColor }}>{project.technologies}</p>
                   )}
-                  <p style={{ color: '#374151', marginTop: '4px', fontSize: '0.875rem' }}>{project.description}</p>
+                  <p style={{ color: textSecondaryColor, marginTop: '4px', fontSize: '0.8rem', lineHeight: '1.4' }}>{project.description}</p>
                   {project.link && (
-                    <p style={{ fontSize: '0.875rem', color: '#2563eb', marginTop: '4px' }}>{project.link}</p>
+                    <p style={{ fontSize: '0.8rem', color: accentColor, marginTop: '4px' }}>{project.link}</p>
                   )}
                 </div>
               ))}
@@ -175,19 +185,20 @@ export const CreativeTemplate = ({ data }) => {
 
         {/* Certifications */}
         {certifications.length > 0 && (
-          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', background: 'linear-gradient(to right, #9333ea, #2563eb)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: '16px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginBottom: '18px' }}>
+            <div style={{ background: `linear-gradient(to right, ${primaryColor}, ${accentColor})`, height: '4px', borderRadius: '2px', marginBottom: '12px' }}></div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: primaryColor, marginBottom: '12px' }}>
               Certifications
             </h2>
             <div>
               {certifications.map((cert, index) => (
-                <div key={index} style={{ display: 'flex', alignItems: 'flex-start', marginBottom: index < certifications.length - 1 ? '12px' : '0' }}>
-                  <div style={{ width: '8px', height: '8px', backgroundColor: '#9333ea', borderRadius: '9999px', marginTop: '8px', marginRight: '12px', flexShrink: 0 }}></div>
+                <div key={index} style={{ display: 'flex', alignItems: 'flex-start', marginBottom: index < certifications.length - 1 ? '10px' : '0' }}>
+                  <div style={{ width: '8px', height: '8px', backgroundColor: primaryColor, borderRadius: '9999px', marginTop: '6px', marginRight: '10px', flexShrink: 0 }}></div>
                   <div>
-                    <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#111827' }}>{cert.name}</h3>
-                    <p style={{ color: '#7c3aed', fontSize: '0.875rem' }}>{cert.issuer} {cert.date && `• ${formatDate(cert.date)}`}</p>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: '600', color: textColor }}>{cert.name}</h3>
+                    <p style={{ color: secondaryColor, fontSize: '0.8rem' }}>{cert.issuer} {cert.date && `• ${formatDate(cert.date)}`}</p>
                     {cert.credentialId && (
-                      <p style={{ fontSize: '0.75rem', color: '#4b5563' }}>ID: {cert.credentialId}</p>
+                      <p style={{ fontSize: '0.7rem', color: textSecondaryColor }}>ID: {cert.credentialId}</p>
                     )}
                   </div>
                 </div>
@@ -198,18 +209,19 @@ export const CreativeTemplate = ({ data }) => {
 
         {/* References */}
         {references.length > 0 && (
-          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', background: 'linear-gradient(to right, #9333ea, #2563eb)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: '16px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+            <div style={{ background: `linear-gradient(to right, ${primaryColor}, ${accentColor})`, height: '4px', borderRadius: '2px', marginBottom: '12px' }}></div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: primaryColor, marginBottom: '12px' }}>
               References
             </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
               {references.map((ref, index) => (
-                <div key={index} style={{ borderLeft: '4px solid #2563eb', paddingLeft: '16px' }}>
-                  <h3 style={{ fontWeight: '600', color: '#111827' }}>{ref.name}</h3>
-                  <p style={{ fontSize: '0.875rem', color: '#374151' }}>{ref.title}</p>
-                  <p style={{ fontSize: '0.875rem', color: '#374151' }}>{ref.company}</p>
-                  {ref.email && <p style={{ fontSize: '0.875rem', color: '#2563eb' }}>{ref.email}</p>}
-                  {ref.phone && <p style={{ fontSize: '0.875rem', color: '#4b5563' }}>{ref.phone}</p>}
+                <div key={index} style={{ borderLeft: `4px solid ${accentColor}`, paddingLeft: '12px' }}>
+                  <h3 style={{ fontWeight: '600', color: textColor, fontSize: '0.95rem' }}>{ref.name}</h3>
+                  <p style={{ fontSize: '0.8rem', color: textSecondaryColor }}>{ref.title}</p>
+                  <p style={{ fontSize: '0.8rem', color: textSecondaryColor }}>{ref.company}</p>
+                  {ref.email && <p style={{ fontSize: '0.8rem', color: accentColor }}>{ref.email}</p>}
+                  {ref.phone && <p style={{ fontSize: '0.8rem', color: textSecondaryColor }}>{ref.phone}</p>}
                 </div>
               ))}
             </div>

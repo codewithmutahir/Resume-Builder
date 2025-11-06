@@ -7,17 +7,24 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const MinimalTemplate = ({ data }) => {
+export const MinimalTemplate = ({ data, colors }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
+  
+  // Use provided colors or fallback to defaults
+  const primaryColor = colors?.primary || '#6b7280';
+  const secondaryColor = colors?.secondary || '#4b5563';
+  const accentColor = colors?.accent || '#9ca3af';
+  const textColor = colors?.text || '#111827';
+  const textSecondaryColor = colors?.textSecondary || '#374151';
 
   return (
-    <div style={{ backgroundColor: 'white', color: '#111827', minHeight: '100%', padding: '48px', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ backgroundColor: 'white', color: textColor, minHeight: '100%', padding: '48px', fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
       <div style={{ marginBottom: '32px' }}>
         <h1 style={{ fontSize: '3rem', fontWeight: '300', marginBottom: '4px', letterSpacing: '-0.025em' }}>{personal.fullName || 'Your Name'}</h1>
-        <p style={{ fontSize: '1.125rem', color: '#4b5563', fontWeight: '300' }}>{personal.title || 'Professional Title'}</p>
+        <p style={{ fontSize: '1.125rem', color: secondaryColor, fontWeight: '300' }}>{personal.title || 'Professional Title'}</p>
         
-        <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '16px', fontSize: '0.875rem', color: '#4b5563' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '16px', fontSize: '0.875rem', color: secondaryColor }}>
           {personal.email && <span style={{ marginRight: '12px' }}>{personal.email}</span>}
           {personal.phone && <span style={{ marginRight: '12px' }}>{personal.phone}</span>}
           {personal.location && <span style={{ marginRight: '12px' }}>{personal.location}</span>}
@@ -30,14 +37,14 @@ export const MinimalTemplate = ({ data }) => {
         {/* Summary */}
         {personal.summary && (
           <div style={{ marginBottom: '32px' }}>
-            <p style={{ color: '#374151', lineHeight: '1.625' }}>{personal.summary}</p>
+            <p style={{ color: textSecondaryColor, lineHeight: '1.625' }}>{personal.summary}</p>
           </div>
         )}
 
         {/* Experience */}
         {experience.length > 0 && (
           <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
               Experience
             </h2>
             <div>
@@ -45,16 +52,16 @@ export const MinimalTemplate = ({ data }) => {
                 <div key={index} style={{ marginBottom: index < experience.length - 1 ? '24px' : '0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                     <div>
-                      <h3 style={{ fontSize: '1.125rem', fontWeight: '500', color: '#111827' }}>{exp.position}</h3>
-                      <p style={{ color: '#4b5563' }}>{exp.company}</p>
+                      <h3 style={{ fontSize: '1.125rem', fontWeight: '500', color: textColor }}>{exp.position}</h3>
+                      <p style={{ color: secondaryColor }}>{exp.company}</p>
                     </div>
-                    <div style={{ textAlign: 'right', fontSize: '0.875rem', color: '#6b7280' }}>
+                    <div style={{ textAlign: 'right', fontSize: '0.875rem', color: primaryColor }}>
                       <p>{formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}</p>
                       {exp.location && <p>{exp.location}</p>}
                     </div>
                   </div>
                   {exp.description && (
-                    <div style={{ color: '#374151', fontSize: '0.875rem', marginTop: '8px', whiteSpace: 'pre-line', lineHeight: '1.625' }}>{exp.description}</div>
+                    <div style={{ color: textSecondaryColor, fontSize: '0.875rem', marginTop: '8px', whiteSpace: 'pre-line', lineHeight: '1.625' }}>{exp.description}</div>
                   )}
                 </div>
               ))}
@@ -65,7 +72,7 @@ export const MinimalTemplate = ({ data }) => {
         {/* Education */}
         {education.length > 0 && (
           <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
               Education
             </h2>
             <div>
@@ -73,16 +80,16 @@ export const MinimalTemplate = ({ data }) => {
                 <div key={index} style={{ marginBottom: index < education.length - 1 ? '16px' : '0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <h3 style={{ fontSize: '1.125rem', fontWeight: '500', color: '#111827' }}>{edu.degree}</h3>
-                      <p style={{ color: '#4b5563' }}>{edu.school}</p>
-                      {edu.field && <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>{edu.field}</p>}
+                      <h3 style={{ fontSize: '1.125rem', fontWeight: '500', color: textColor }}>{edu.degree}</h3>
+                      <p style={{ color: secondaryColor }}>{edu.school}</p>
+                      {edu.field && <p style={{ color: primaryColor, fontSize: '0.875rem' }}>{edu.field}</p>}
                     </div>
-                    <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                    <p style={{ fontSize: '0.875rem', color: primaryColor }}>
                       {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                     </p>
                   </div>
                   {edu.description && (
-                    <p style={{ color: '#374151', fontSize: '0.875rem', marginTop: '4px' }}>{edu.description}</p>
+                    <p style={{ color: textSecondaryColor, fontSize: '0.875rem', marginTop: '4px' }}>{edu.description}</p>
                   )}
                 </div>
               ))}
@@ -93,10 +100,10 @@ export const MinimalTemplate = ({ data }) => {
         {/* Skills */}
         {skills.length > 0 && (
           <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
               Skills
             </h2>
-            <p style={{ color: '#374151' }}>
+            <p style={{ color: textSecondaryColor }}>
               {skills.join(', ')}
             </p>
           </div>
@@ -105,19 +112,19 @@ export const MinimalTemplate = ({ data }) => {
         {/* Projects */}
         {projects.length > 0 && (
           <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
               Projects
             </h2>
             <div>
               {projects.map((project, index) => (
                 <div key={index} style={{ marginBottom: index < projects.length - 1 ? '16px' : '0' }}>
-                  <h3 style={{ fontSize: '1.125rem', fontWeight: '500', color: '#111827' }}>{project.name}</h3>
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: '500', color: textColor }}>{project.name}</h3>
                   {project.technologies && (
-                    <p style={{ fontSize: '0.875rem', color: '#4b5563' }}>{project.technologies}</p>
+                    <p style={{ fontSize: '0.875rem', color: secondaryColor }}>{project.technologies}</p>
                   )}
-                  <p style={{ color: '#374151', marginTop: '4px', fontSize: '0.875rem' }}>{project.description}</p>
+                  <p style={{ color: textSecondaryColor, marginTop: '4px', fontSize: '0.875rem' }}>{project.description}</p>
                   {project.link && (
-                    <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '4px' }}>{project.link}</p>
+                    <p style={{ fontSize: '0.875rem', color: primaryColor, marginTop: '4px' }}>{project.link}</p>
                   )}
                 </div>
               ))}
@@ -128,16 +135,16 @@ export const MinimalTemplate = ({ data }) => {
         {/* Certifications */}
         {certifications.length > 0 && (
           <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
               Certifications
             </h2>
             <div>
               {certifications.map((cert, index) => (
                 <div key={index} style={{ marginBottom: index < certifications.length - 1 ? '12px' : '0' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: '500', color: '#111827' }}>{cert.name}</h3>
-                  <p style={{ color: '#4b5563', fontSize: '0.875rem' }}>{cert.issuer} {cert.date && `• ${formatDate(cert.date)}`}</p>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '500', color: textColor }}>{cert.name}</h3>
+                  <p style={{ color: secondaryColor, fontSize: '0.875rem' }}>{cert.issuer} {cert.date && `• ${formatDate(cert.date)}`}</p>
                   {cert.credentialId && (
-                    <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>ID: {cert.credentialId}</p>
+                    <p style={{ fontSize: '0.75rem', color: primaryColor }}>ID: {cert.credentialId}</p>
                   )}
                 </div>
               ))}
@@ -148,17 +155,17 @@ export const MinimalTemplate = ({ data }) => {
         {/* References */}
         {references.length > 0 && (
           <div>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
               References
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               {references.map((ref, index) => (
                 <div key={index}>
-                  <h3 style={{ fontWeight: '500', color: '#111827' }}>{ref.name}</h3>
-                  <p style={{ fontSize: '0.875rem', color: '#4b5563' }}>{ref.title}</p>
-                  <p style={{ fontSize: '0.875rem', color: '#4b5563' }}>{ref.company}</p>
-                  {ref.email && <p style={{ fontSize: '0.875rem', color: '#4b5563' }}>{ref.email}</p>}
-                  {ref.phone && <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>{ref.phone}</p>}
+                  <h3 style={{ fontWeight: '500', color: textColor }}>{ref.name}</h3>
+                  <p style={{ fontSize: '0.875rem', color: secondaryColor }}>{ref.title}</p>
+                  <p style={{ fontSize: '0.875rem', color: secondaryColor }}>{ref.company}</p>
+                  {ref.email && <p style={{ fontSize: '0.875rem', color: secondaryColor }}>{ref.email}</p>}
+                  {ref.phone && <p style={{ fontSize: '0.875rem', color: primaryColor }}>{ref.phone}</p>}
                 </div>
               ))}
             </div>

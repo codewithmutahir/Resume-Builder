@@ -57,7 +57,7 @@ export const ExperienceForm = () => {
         ? ` starting ${startDate}`
         : '';
     
-    const prompt = `Write 4-5 professional resume bullet points for a ${position} at ${company}${location ? ' in ' + location : ''}${dateRange}. Each bullet point should start with a strong action verb and highlight key responsibilities, achievements, and impact. Make them specific, quantifiable where possible, and suitable for a resume. Format as bullet points with • prefix.`;
+    const prompt = `Write 3-4 professional resume bullet points for a ${position} at ${company}${location ? ' in ' + location : ''}${dateRange}. Each bullet point should start with a strong action verb and highlight key responsibilities, achievements, and impact. Make them specific, quantifiable where possible, and suitable for a resume. Format as bullet points with • prefix.`;
     
     try {
       handleChange(index, 'description', "Generating description...");

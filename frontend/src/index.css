@@ -11,7 +11,25 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: hsl(var(--background));
+    background: var(--gradient-bg);
+    background-attachment: fixed;
+    color: hsl(var(--foreground));
+    line-height: 1.6;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(47, 128, 237, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(25, 195, 255, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 * {
@@ -25,98 +43,105 @@ code {
 
 @layer base {
     :root {
-        /* Dark Blue Professional Theme */
-        --background: 220 30% 8%;
-        --foreground: 210 40% 98%;
+        /* Vibrant Premium Theme - More Engaging */
+        --background: 0 0% 98%;
+        --foreground: 222 47% 11%;
         
-        --card: 220 26% 12%;
-        --card-foreground: 210 40% 98%;
+        --card: 0 0% 100%;
+        --card-foreground: 222 47% 11%;
         
-        --popover: 220 26% 14%;
-        --popover-foreground: 210 40% 98%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222 47% 11%;
         
-        /* Primary: Electric Blue */
-        --primary: 217 91% 60%;
-        --primary-foreground: 220 30% 8%;
-        --primary-light: 217 91% 70%;
-        --primary-glow: 217 91% 80%;
+        /* Primary: Vibrant Blue #2F80ED with more saturation */
+        --primary: 214 91% 60%;
+        --primary-foreground: 0 0% 100%;
+        --primary-light: 214 91% 70%;
+        --primary-glow: 214 91% 80%;
         
-        /* Secondary: Deep Navy */
-        --secondary: 220 26% 18%;
-        --secondary-foreground: 210 40% 96%;
+        /* Secondary: Warm Gray */
+        --secondary: 210 30% 95%;
+        --secondary-foreground: 222 47% 11%;
         
-        /* Accent: Cyan Blue */
-        --accent: 199 89% 55%;
-        --accent-foreground: 220 30% 8%;
-        --accent-light: 199 89% 65%;
+        /* Accent: Vibrant Cyan-Blue */
+        --accent: 199 89% 58%;
+        --accent-foreground: 0 0% 100%;
+        --accent-light: 199 89% 68%;
         
-        /* Muted: Dark Blue-Gray */
-        --muted: 220 20% 16%;
-        --muted-foreground: 215 20% 65%;
+        /* Muted: Soft Gray with warmth */
+        --muted: 210 30% 94%;
+        --muted-foreground: 215 16% 47%;
         
         --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 220 30% 8%;
+        --destructive-foreground: 0 0% 100%;
         
-        --border: 220 20% 24%;
-        --input: 220 26% 16%;
-        --ring: 217 91% 60%;
+        --border: 214 32% 88%;
+        --input: 214 32% 91%;
+        --ring: 214 91% 60%;
         
         /* Success State */
         --success: 142 76% 50%;
         --success-foreground: 0 0% 100%;
         
-        /* Custom shadows */
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        --shadow-elegant: 0 10px 30px -10px hsl(213 45% 28% / 0.2);
+        /* Enhanced shadows with more depth and color */
+        --shadow-sm: 0 1px 3px 0 rgba(47, 128, 237, 0.08);
+        --shadow-md: 0 4px 12px -2px rgba(47, 128, 237, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 12px 24px -4px rgba(47, 128, 237, 0.15), 0 4px 8px -2px rgba(0, 0, 0, 0.08);
+        --shadow-xl: 0 24px 48px -8px rgba(47, 128, 237, 0.2), 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+        --shadow-elegant: 0 12px 40px -6px rgba(47, 128, 237, 0.25);
+        --shadow-paper: 0 4px 12px rgba(47, 128, 237, 0.1), 0 0 0 1px rgba(47, 128, 237, 0.05);
+        --shadow-glow: 0 0 30px rgba(47, 128, 237, 0.3);
         
-        /* Gradients */
-        --gradient-primary: linear-gradient(135deg, hsl(213 45% 28%) 0%, hsl(213 50% 45%) 100%);
-        --gradient-accent: linear-gradient(135deg, hsl(217 89% 55%) 0%, hsl(217 89% 65%) 100%);
-        --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 20% 98%) 100%);
+        /* Vibrant Premium Gradients */
+        --gradient-primary: linear-gradient(135deg, hsl(214 91% 60%) 0%, hsl(199 89% 58%) 100%);
+        --gradient-accent: linear-gradient(135deg, hsl(214 91% 60%) 0%, hsl(199 89% 65%) 100%);
+        --gradient-subtle: linear-gradient(135deg, hsl(210 40% 98%) 0%, hsl(214 50% 96%) 50%, hsl(199 40% 97%) 100%);
+        --gradient-header: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(214 30% 98%) 50%, hsl(199 30% 99%) 100%);
+        --gradient-button: linear-gradient(135deg, hsl(214 91% 60%) 0%, hsl(199 89% 58%) 100%);
+        --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(214 20% 99%) 100%);
+        --gradient-bg: radial-gradient(ellipse at top, hsl(214 50% 97%), hsl(0 0% 98%)), radial-gradient(ellipse at bottom right, hsl(199 40% 96%), transparent);
         
         /* Transitions */
         --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         --transition-fast: all 0.15s ease;
         
-        --radius: 0.5rem;
-        --radius-sm: 0.375rem;
-        --radius-lg: 0.75rem;
+        --radius: 0.75rem;
+        --radius-sm: 0.5rem;
+        --radius-lg: 1rem;
     }
     
     .dark {
-        --background: 213 28% 10%;
-        --foreground: 0 0% 98%;
+        /* Keep dark mode for users who prefer it */
+        --background: 222 47% 11%;
+        --foreground: 210 40% 98%;
         
-        --card: 213 28% 12%;
-        --card-foreground: 0 0% 98%;
+        --card: 222 47% 11%;
+        --card-foreground: 210 40% 98%;
         
-        --popover: 213 28% 12%;
-        --popover-foreground: 0 0% 98%;
+        --popover: 222 47% 11%;
+        --popover-foreground: 210 40% 98%;
         
-        --primary: 217 89% 55%;
+        --primary: 217 91% 60%;
         --primary-foreground: 0 0% 100%;
-        --primary-light: 217 89% 65%;
-        --primary-glow: 217 89% 70%;
+        --primary-light: 217 91% 70%;
+        --primary-glow: 217 91% 80%;
         
-        --secondary: 213 25% 18%;
-        --secondary-foreground: 0 0% 98%;
+        --secondary: 217 33% 17%;
+        --secondary-foreground: 210 40% 98%;
         
-        --accent: 217 89% 55%;
+        --accent: 217 91% 60%;
         --accent-foreground: 0 0% 100%;
-        --accent-light: 217 89% 65%;
+        --accent-light: 217 91% 70%;
         
-        --muted: 213 25% 18%;
-        --muted-foreground: 213 15% 60%;
+        --muted: 217 33% 17%;
+        --muted-foreground: 215 20% 65%;
         
         --destructive: 0 62.8% 50%;
         --destructive-foreground: 0 0% 98%;
         
-        --border: 213 25% 20%;
-        --input: 213 25% 20%;
-        --ring: 217 89% 55%;
+        --border: 217 33% 17%;
+        --input: 217 33% 17%;
+        --ring: 217 91% 60%;
         
         --success: 142 76% 45%;
         --success-foreground: 0 0% 100%;
@@ -132,7 +157,20 @@ code {
     }
     
     h1, h2, h3, h4, h5, h6 {
-        @apply font-semibold;
+        @apply font-light;
+        letter-spacing: -0.02em;
+    }
+    
+    h1 {
+        font-weight: 300;
+    }
+    
+    h2 {
+        font-weight: 400;
+    }
+    
+    h3 {
+        font-weight: 500;
     }
 }
 
@@ -207,6 +245,73 @@ code {
 
 .pdf-export [style*="gradient"] {
     background-image: none !important;
+}
+
+/* Paper texture for resume preview */
+.resume-document {
+    background: #ffffff;
+    background-image: 
+        radial-gradient(circle at 1px 1px, rgba(47, 128, 237, 0.02) 1px, transparent 0),
+        linear-gradient(to bottom, rgba(47, 128, 237, 0.01) 0%, transparent 2%);
+    background-size: 20px 20px, 100% 100%;
+    box-shadow: var(--shadow-paper), 0 0 0 1px rgba(47, 128, 237, 0.08);
+    border-radius: 0.75rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(47, 128, 237, 0.1);
+}
+
+.resume-document::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, transparent 2%),
+        linear-gradient(to top, rgba(255,255,255,0.8) 0%, transparent 2%);
+    pointer-events: none;
+    border-radius: 0.5rem;
+}
+
+.resume-document::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(0,0,0,0.05), transparent);
+    pointer-events: none;
+}
+
+/* Enhanced Card Styles */
+@layer components {
+    .card-premium {
+        background: white;
+        border: 1px solid rgba(47, 128, 237, 0.15);
+        box-shadow: 
+            0 4px 12px -2px rgba(47, 128, 237, 0.12),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card-premium::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(47, 128, 237, 0.3) 50%, 
+            transparent 100%);
+        opacity: 0.5;
+    }
 }
 
 /* Custom Dark Blue Theme Utilities */
@@ -313,15 +418,16 @@ code {
 }
 
 ::-webkit-scrollbar-track {
-    @apply bg-muted;
+    background: hsl(var(--muted));
 }
 
 ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-lg;
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 0.5rem;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/50;
+    background: hsl(var(--muted-foreground) / 0.5);
 }
 
 @layer base {

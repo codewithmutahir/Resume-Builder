@@ -280,7 +280,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading profile...</p>
@@ -290,11 +290,11 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 relative overflow-hidden">
-      {/* Animated Background Elements */}
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Subtle Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute top-20 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
+          className="absolute top-20 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
           animate={{
             x: [0, 50, 0],
             y: [0, -25, 0],
@@ -307,7 +307,7 @@ const Profile = () => {
           }}
         />
         <motion.div
-          className="absolute bottom-20 -right-20 w-96 h-96 bg-accent/10 rounded-full blur-3xl"
+          className="absolute bottom-20 -right-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
           animate={{
             x: [0, -50, 0],
             y: [0, 25, 0],
@@ -323,7 +323,7 @@ const Profile = () => {
 
       {/* Header */}
       <motion.header 
-        className="bg-card/80 backdrop-blur-xl border-b border-primary/20 shadow-lg shadow-primary/5 relative z-10 sticky top-0"
+        className="bg-white/80 backdrop-blur-md border-b border-border/50 shadow-sm relative z-10 sticky top-0"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
@@ -360,17 +360,17 @@ const Profile = () => {
           className="space-y-6"
         >
           {/* Profile Header Card */}
-          <Card className="p-6 bg-card/80 backdrop-blur-xl border-primary/20">
+          <Card className="p-6 bg-white border border-border shadow-md rounded-xl">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              <Avatar className="h-24 w-24 border-4 border-primary/20">
+              <Avatar className="h-24 w-24 border-4 border-border">
                 <AvatarImage src={currentUser?.photoURL || userData?.photoURL} />
-                <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-background text-2xl">
+                <AvatarFallback className="bg-primary text-white text-2xl">
                   {getInitials(currentUser?.displayName || userData?.displayName || currentUser?.email)}
                 </AvatarFallback>
               </Avatar>
               
               <div className="flex-1">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
+                <h1 className="text-3xl font-bold text-foreground mb-2">
                   {currentUser?.displayName || userData?.displayName || 'User'}
                 </h1>
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
@@ -389,7 +389,7 @@ const Profile = () => {
 
               {/* Stats Cards */}
               <div className="grid grid-cols-2 gap-4 w-full sm:w-auto">
-                <Card className="p-4 bg-gradient-to-br from-primary/20 to-accent/20 border-primary/30">
+                <Card className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-primary/20">
                       <FileCheck className="w-5 h-5 text-primary" />
@@ -403,10 +403,10 @@ const Profile = () => {
                   </div>
                 </Card>
                 
-                <Card className="p-4 bg-gradient-to-br from-accent/20 to-primary/20 border-accent/30">
+                <Card className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-accent/20">
-                      <TrendingUp className="w-5 h-5 text-accent" />
+                    <div className="p-2 rounded-lg bg-primary/20">
+                      <TrendingUp className="w-5 h-5 text-primary" />
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-foreground">
@@ -449,7 +449,7 @@ const Profile = () => {
             </div>
 
             {resumes.length === 0 ? (
-              <Card className="p-12 text-center bg-card/80 backdrop-blur-xl border-primary/20">
+              <Card className="p-12 text-center bg-white border border-border shadow-md rounded-xl">
                 <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
                 <h3 className="text-xl font-semibold text-foreground mb-2">No resumes found</h3>
                 <div className="space-y-4 mb-6">
@@ -493,9 +493,9 @@ const Profile = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <Card className="p-5 bg-card/80 backdrop-blur-xl border-primary/20 hover:border-primary/40 transition-all hover:shadow-lg flex flex-col h-full">
+                    <Card className="p-5 bg-white border border-border shadow-md hover:shadow-lg transition-all rounded-xl flex flex-col h-full">
                       {/* PDF Preview/Icon */}
-                      <div className="mb-4 flex items-center justify-center p-6 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg border border-primary/20">
+                      <div className="mb-4 flex items-center justify-center p-6 bg-primary/5 rounded-lg border border-border">
                         <FileText className={`w-16 h-16 ${getTemplateColor(resume.template).split(' ')[0].replace('from-', 'text-')} opacity-60`} />
                       </div>
 

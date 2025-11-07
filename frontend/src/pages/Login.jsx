@@ -71,15 +71,15 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 relative overflow-hidden flex items-center justify-center p-4">
-      {/* Animated Background Elements */}
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
+      {/* Vibrant Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute top-20 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
+          className="absolute top-20 -left-20 w-[500px] h-[500px] bg-gradient-to-br from-primary/10 via-primary/8 to-accent/10 rounded-full blur-3xl"
           animate={{
-            x: [0, 50, 0],
-            y: [0, -25, 0],
-            scale: [1, 1.2, 1],
+            x: [0, 80, 0],
+            y: [0, -40, 0],
+            scale: [1, 1.3, 1],
           }}
           transition={{
             duration: 20,
@@ -88,11 +88,11 @@ const Login = () => {
           }}
         />
         <motion.div
-          className="absolute bottom-20 -right-20 w-96 h-96 bg-accent/10 rounded-full blur-3xl"
+          className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-accent/10 via-primary/8 to-primary/10 rounded-full blur-3xl"
           animate={{
-            x: [0, -50, 0],
-            y: [0, 25, 0],
-            scale: [1, 1.1, 1],
+            x: [0, -80, 0],
+            y: [0, 40, 0],
+            scale: [1, 1.2, 1],
           }}
           transition={{
             duration: 15,
@@ -108,18 +108,24 @@ const Login = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Card className="p-8 bg-card/80 backdrop-blur-xl border-primary/20 shadow-2xl">
+        <Card className="p-8 bg-white border border-primary/20 shadow-2xl shadow-primary/10 rounded-xl relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none rounded-xl" />
           {/* Logo */}
-          <div className="flex flex-col items-center mb-8">
+          <div className="flex flex-col items-center mb-8 relative z-10">
             <motion.div
-              className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/50 mb-4"
+              className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30 mb-4 relative overflow-hidden"
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ type: "spring", stiffness: 400 }}
             >
-              <FileText className="w-8 h-8 text-background" />
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              />
+              <FileText className="w-8 h-8 text-white relative z-10" />
             </motion.div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-              Resume Builder Pro
+            <h1 className="text-3xl font-light bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent mb-2 tracking-tight">
+              Resume Builder
             </h1>
             <p className="text-sm text-muted-foreground">Sign in to continue</p>
           </div>
@@ -129,7 +135,7 @@ const Login = () => {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={loading}
-            className="w-full mb-6 bg-background hover:bg-secondary border border-primary/20"
+            className="w-full mb-6 bg-white hover:bg-muted border border-border shadow-sm"
             variant="outline"
           >
             <Chrome className="w-5 h-5 mr-2" />
@@ -138,10 +144,10 @@ const Login = () => {
 
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-primary/20" />
+              <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
+              <span className="bg-white px-2 text-muted-foreground">Or continue with email</span>
             </div>
           </div>
 
@@ -210,7 +216,7 @@ const Login = () => {
             <Button
               type="submit"
               disabled={loading || !!emailError || !email || !password}
-              className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>

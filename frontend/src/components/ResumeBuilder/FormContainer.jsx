@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight, Save, RotateCcw } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useResume } from '../../context/ResumeContext';
 import { PersonalDetailsForm } from './PersonalDetailsForm';
 import { EducationForm } from './EducationForm';
@@ -48,11 +49,12 @@ const FormContainer = () => {
   const isLastStep = currentStep === steps.length - 1;
 
   return (
-    <Card className="h-full flex flex-col">
-      <div className="p-6 border-b bg-card">
+    <Card className="h-full flex flex-col bg-white border border-primary/20 shadow-xl shadow-primary/5 rounded-xl overflow-hidden relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none rounded-xl" />
+      <div className="p-6 border-b border-primary/20 bg-gradient-to-r from-white via-primary/5 to-accent/5 relative z-10">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-foreground">
+            <h2 className="text-xl font-light text-foreground tracking-tight">
               Step {currentStep + 1} of {steps.length}
             </h2>
             <p className="text-sm text-muted-foreground mt-1">{steps[currentStep].title}</p>
@@ -69,23 +71,28 @@ const FormContainer = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-6 bg-gradient-to-br from-white to-muted/20">
         <CurrentStepComponent />
       </div>
 
-      <div className="p-6 border-t bg-card flex items-center justify-between">
+      <div className="p-6 border-t border-primary/20 bg-gradient-to-r from-white via-primary/5 to-accent/5 flex items-center justify-between relative z-10">
         <Button
           onClick={handlePrevious}
           disabled={isFirstStep}
           variant="outline"
-          className="gap-2"
+          className="gap-2 border-primary/30 shadow-sm hover:shadow-md"
         >
           <ChevronLeft className="w-4 h-4" />
           Previous
         </Button>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Save className="w-4 h-4" />
+          <motion.div
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <Save className="w-4 h-4 text-primary" />
+          </motion.div>
           <span>Auto-saved</span>
         </div>
 

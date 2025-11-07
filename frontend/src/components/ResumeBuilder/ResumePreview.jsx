@@ -128,16 +128,17 @@ export const ResumePreview = () => {
   };
 
   return (
-    <Card className="h-full flex flex-col bg-muted/30">
-      <div className="p-4 border-b bg-card flex items-center justify-between">
+    <Card className="h-full flex flex-col bg-gradient-to-br from-primary/10 via-white to-accent/10 border border-primary/20 shadow-xl shadow-primary/10 rounded-xl overflow-hidden relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none rounded-xl" />
+      <div className="p-4 border-b border-primary/20 bg-gradient-to-r from-white via-primary/5 to-accent/5 flex items-center justify-between backdrop-blur-sm relative z-10">
         <div className="flex items-center gap-2">
           <FileText className="w-5 h-5 text-primary" />
-          <h3 className="font-semibold text-foreground">Resume Preview</h3>
+          <h3 className="font-medium text-foreground">Resume Preview</h3>
         </div>
         <Button 
           onClick={handleDownloadPDF} 
           size="sm" 
-          className="gap-2"
+          className="gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-md"
           disabled={isExporting}
         >
           <Download className="w-4 h-4" />
@@ -145,10 +146,10 @@ export const ResumePreview = () => {
         </Button>
       </div>
       
-      <div className="flex-1 overflow-auto p-4">
+      <div className="flex-1 overflow-auto p-6 md:p-8 bg-gradient-to-br from-muted/20 via-muted/10 to-muted/20">
         <div 
           ref={previewRef}
-          className="bg-white shadow-xl mx-auto" 
+          className="resume-document mx-auto" 
           style={{ 
             width: '8.5in',
             minHeight: '11in',

@@ -25,42 +25,55 @@ export const StepIndicator = ({ currentStep, onStepClick }) => {
                   "flex flex-col items-center cursor-pointer relative group",
                 )}
                 onClick={() => onStepClick(step.id)}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.1, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
               >
                 <motion.div 
                   className={cn(
-                    "w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-1 sm:mb-1.5 md:mb-2 border-2 transition-all duration-300",
+                    "w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center mb-2 border-2 transition-all duration-300 shadow-lg relative overflow-hidden",
                     currentStep === step.id 
-                      ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/50 scale-110"
+                      ? "bg-gradient-to-br from-primary via-primary to-accent border-primary text-white shadow-xl shadow-primary/40"
                       : currentStep > step.id
-                        ? "bg-success border-success text-success-foreground shadow-md"
-                        : "bg-secondary border-border text-muted-foreground hover:border-primary/50"
+                        ? "bg-success border-success text-white shadow-md"
+                        : "bg-white border-border text-muted-foreground hover:border-primary/50 hover:shadow-md"
                   )}
                   animate={currentStep === step.id ? {
+                    y: [0, -6, 0],
                     boxShadow: [
-                      "0 0 20px hsl(var(--primary) / 0.5)",
-                      "0 0 30px hsl(var(--primary) / 0.7)",
-                      "0 0 20px hsl(var(--primary) / 0.5)"
+                      "0 8px 20px rgba(47, 128, 237, 0.3)",
+                      "0 12px 30px rgba(47, 128, 237, 0.4)",
+                      "0 8px 20px rgba(47, 128, 237, 0.3)"
                     ]
-                  } : {}}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  } : {
+                    y: 0
+                  }}
+                  transition={{ 
+                    y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                    boxShadow: { duration: 2, repeat: Infinity }
+                  }}
                 >
+                  {currentStep === step.id && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent"
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                    />
+                  )}
                   {currentStep > step.id ? (
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                    <CheckCircle2 className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 relative z-10" />
                   ) : (
-                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                    <Icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 relative z-10" />
                   )}
                 </motion.div>
                 
                 {/* Step Name - Show short name on mobile, full name on desktop */}
                 <span className={cn(
-                  "text-[9px] sm:text-[10px] md:text-xs font-medium transition-all duration-300 text-center leading-tight",
+                  "text-xs sm:text-sm font-medium transition-all duration-300 text-center leading-tight",
                   currentStep === step.id 
-                    ? "text-primary font-bold"
+                    ? "text-primary font-semibold"
                     : currentStep > step.id
-                      ? "text-success"
+                      ? "text-success font-medium"
                       : "text-muted-foreground group-hover:text-foreground"
                 )}>
                   <span className="hidden sm:inline">{step.name}</span>

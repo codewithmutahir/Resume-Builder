@@ -76,7 +76,7 @@ Try out the Resume Builder here:
 - Lightning-fast and easy to use.
 - No sign-up required.
 - Always free and open source.
-- Maintained by Elite Solution USA.
+- Maintained by Mutahir Hussain.
 
 ---
 

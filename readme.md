@@ -1,4 +1,4 @@
-# Elite Solution Resume Builder
+# Resume Builder
 
 Welcome to the **Resume Builder** project! This web application allows users to rapidly create modern, professional resumes with ease and flexibility.
 
@@ -40,7 +40,7 @@ Try out the Resume Builder here:
 
 1. **Clone the repository**
     ```bash
-    git clone https://github.com/your-org/resume-builder.git
+    git clone https://github.com/codewithmutahir/Resume-Builder.git
     cd resume-builder
     ```
 
@@ -94,8 +94,8 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 ## 🙏 Credits
 
-Made with ❤️ by [Elite Solution USA](https://elitesolutionusa.com/).
+Made with ❤️ by [Mutahir Hussain](https://github.com/codewithmutahir).
 
-Questions or feedback? Contact us at [https://elitesolutionusa.com/contact](https://elitesolutionusa.com/contact)
+Questions or feedback? Contact us at [mutharsoomro13@gmail.com](mailto:mutharsoomro13@gmail.com)
 
 

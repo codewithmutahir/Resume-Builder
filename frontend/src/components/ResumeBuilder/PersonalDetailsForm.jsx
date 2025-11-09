@@ -1,16 +1,18 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { X, Upload } from 'lucide-react';
+import { X, Upload, Loader2, Sparkles } from 'lucide-react';
 import { useResume } from '../../context/ResumeContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const PersonalDetailsForm = () => {
   const { resumeData, updatePersonal } = useResume();
   const { personal } = resumeData;
   const fileInputRef = useRef(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleChange = (field, value) => {
     updatePersonal({ [field]: value });
@@ -63,7 +65,8 @@ export const PersonalDetailsForm = () => {
     const prompt = `Write a professional 2-3 sentence resume summary for a ${title}${location ? ' based in ' + location : ''}. The summary should highlight their expertise, key skills, and professional value. Make it concise, impactful, and suitable for a resume header. Focus on what makes them valuable to potential employers.`;
     
     try {
-      handleChange('summary', "Generating summary...");
+      setIsGenerating(true);
+      // Don't set text - keep textarea empty for cleaner UI
       
       // Get the HF token from environment or prompt user
       const HF_TOKEN = process.env.REACT_APP_HF_TOKEN;
@@ -71,6 +74,7 @@ export const PersonalDetailsForm = () => {
       if (!HF_TOKEN || HF_TOKEN === 'YOUR_HUGGINGFACE_TOKEN_HERE') {
         handleChange('summary', "Error: HuggingFace API token not configured. Please add REACT_APP_HF_TOKEN to your environment variables and redeploy.");
         console.error('REACT_APP_HF_TOKEN is not set. Value:', process.env.REACT_APP_HF_TOKEN);
+        setIsGenerating(false);
         return;
       }
       
@@ -109,6 +113,7 @@ export const PersonalDetailsForm = () => {
         } else {
           handleChange('summary', `Error: ${response.status}. Please try again.`);
         }
+        setIsGenerating(false);
         return;
       }
             
@@ -124,18 +129,12 @@ export const PersonalDetailsForm = () => {
           console.error('Unexpected response format:', data);
           handleChange('summary', "Could not generate summary. Please try again.");
         }
-
-
-
-    }
-    
-    catch (err) {
+    } catch (err) {
       console.error('Error generating summary:', err);
       handleChange('summary', `Error: ${err.message}. Please check your internet connection.`);
+    } finally {
+      setIsGenerating(false);
     }
-
-
-    
   };
 
   return (
@@ -262,22 +261,90 @@ export const PersonalDetailsForm = () => {
       <div className="space-y-2">
         <Label htmlFor="summary">
           Professional Summary{" "}
-          <button
-            type="button"
-            className="ml-2 text-xs underline text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleGenerateSummary}
-            disabled={!personal.title || personal.title.trim() === ''}
-          >
-            Generate with AI
-          </button>
         </Label>
-        <Textarea
-          id="summary"
-          placeholder="A brief summary of your professional background, skills, and career objectives..."
-          className="min-h-[120px]"
-          value={personal.summary}
-          onChange={(e) => handleChange('summary', e.target.value)}
-        />
+        <button
+            type="button"
+            className="ml-2 text-xs flex gap-2 items-center no-underline text-decoration-none text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            onClick={handleGenerateSummary}
+            disabled={isGenerating || !personal.title || personal.title.trim() === ''}
+          >
+            Generate with AI <Sparkles className="w-4 h-4" />
+          </button>
+        <div className="relative">
+          <AnimatePresence>
+            {isGenerating && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/30 to-transparent pointer-events-none rounded-md z-10"
+                style={{
+                  background: "linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.1) 50%, transparent 100%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer 2s infinite",
+                }}
+              />
+            )}
+          </AnimatePresence>
+          <motion.div
+            animate={
+              isGenerating
+                ? {
+                    boxShadow: [
+                      "0 0 0 0px rgba(59, 130, 246, 0.2)",
+                      "0 0 0 3px rgba(59, 130, 246, 0.1)",
+                      "0 0 0 0px rgba(59, 130, 246, 0.2)",
+                    ],
+                  }
+                : {}
+            }
+            transition={{
+              duration: 2,
+              repeat: isGenerating ? Infinity : 0,
+              ease: "easeInOut",
+            }}
+            className="rounded-md"
+          >
+            <Textarea
+              id="summary"
+              placeholder={
+                isGenerating
+                  ? ""
+                  : "A brief summary of your professional background, skills, and career objectives..."
+              }
+              className={`min-h-[120px] relative transition-all ${
+                isGenerating
+                  ? "border-blue-300 bg-blue-50/30"
+                  : ""
+              }`}
+              value={personal.summary}
+              onChange={(e) => handleChange('summary', e.target.value)}
+              disabled={isGenerating}
+            />
+          </motion.div>
+          {isGenerating && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="absolute bottom-4 left-4 flex items-center gap-2 text-sm font-medium text-blue-600 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-blue-100"
+            >
+              <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+              <motion.span
+                animate={{
+                  opacity: [0.6, 1, 0.6],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                AI is crafting your summary
+              </motion.span>
+            </motion.div>
+          )}
+        </div>
         <p className="text-xs text-muted-foreground">2-3 sentences highlighting your expertise and what you bring to the role</p>
         <p className="text-xs text-muted-foreground mt-1">
           <span className="font-medium">Tip:</span> Enter your professional title, then click "Generate with AI" to create a personalized summary.

@@ -223,14 +223,26 @@ const Login = () => {
           </form>
 
           {/* Sign Up Link */}
-          <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">Don't have an account? </span>
-            <Link
-              to="/signup"
-              className="text-primary hover:text-accent font-medium hover:underline"
-            >
-              Sign up
-            </Link>
+          <div className="mt-6 text-center text-sm space-y-2">
+            <p>
+              <span className="text-muted-foreground">Don't have an account? </span>
+              <Link
+                to="/signup"
+                className="text-primary hover:text-accent font-medium hover:underline"
+              >
+                Sign up
+              </Link>
+            </p>
+            <p className="text-muted-foreground">
+              <a
+                href="https://seotools.elitesolutionusa.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                Free SEO Tools by Elite Solution
+              </a>
+            </p>
           </div>
         </Card>
       </motion.div>

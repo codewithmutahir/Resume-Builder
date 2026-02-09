@@ -522,14 +522,13 @@ const Signup = () => {
                 Sign in
               </Link>
             </p>
-            <p className="text-muted-foreground">
-              <a
+             <p className="text-muted-foreground">
+                Free SEO Tools by               <a
                 href="https://seotools.elitesolutionusa.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                Free SEO Tools by Elite Solution
+              > Elite Solution
               </a>
             </p>
           </div>

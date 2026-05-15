@@ -524,8 +524,13 @@ const Signup = () => {
             </p>
              <p className="text-muted-foreground">
                 Free SEO Tools by               <a
+<<<<<<< HEAD
                               href="https://www.elitesolutionusa.com/"
                   target="_blank"
+=======
+                href="https://elitesolutionusa.com/"
+                target="_blank"
+>>>>>>> 1ea8a94ddca06763f0be7d43dac757f4cd2f53eb
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
               > Elite Solution

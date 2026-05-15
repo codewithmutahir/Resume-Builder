@@ -235,7 +235,11 @@ const Login = () => {
             </p>
             <p className="text-muted-foreground">
                 Free SEO Tools by               <a
+<<<<<<< HEAD
                 href="https://www.elitesolutionusa.com/"
+=======
+                href="https://elitesolutionusa.com/"
+>>>>>>> 1ea8a94ddca06763f0be7d43dac757f4cd2f53eb
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"

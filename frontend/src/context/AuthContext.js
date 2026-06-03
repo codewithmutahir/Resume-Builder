@@ -3,6 +3,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -10,7 +12,7 @@ import {
   fetchSignInMethodsForEmail
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+import { auth, db, isFirebaseConfigured } from '../config/firebase';
 import { toast } from 'sonner';
 
 const AuthContext = createContext();
@@ -302,61 +304,67 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Sign in with Google
-  const signInWithGoogle = async () => {
-    try {
-      // Check if auth is initialized
-      if (!auth) {
-        throw new Error('Firebase Authentication is not configured. Please check your Firebase setup.');
-      }
+  const ensureGoogleUserDocument = async (user) => {
+    if (!db || !user) return;
 
-      const provider = new GoogleAuthProvider();
-      // Add additional scopes if needed
-      provider.addScope('profile');
-      provider.addScope('email');
-      
+    const userDocRef = doc(db, 'users', user.uid);
+    const userDocSnap = await getDoc(userDocRef);
+
+    if (!userDocSnap.exists()) {
+      await setDoc(userDocRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || '',
+        photoURL: user.photoURL || '',
+        createdAt: serverTimestamp(),
+        resumeCount: 0,
+        lastLogin: serverTimestamp()
+      });
+    } else {
+      await setDoc(userDocRef, { lastLogin: serverTimestamp() }, { merge: true });
+    }
+  };
+
+  // Sign in with Google (popup, then redirect fallback)
+  const signInWithGoogle = async () => {
+    if (!auth) {
+      const message = 'Firebase is not configured. Add environment variables in Vercel/hosting settings.';
+      toast.error(message);
+      throw new Error(message);
+    }
+
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+
+    const popupFallbackCodes = new Set([
+      'auth/popup-blocked',
+      'auth/popup-closed-by-user',
+      'auth/cancelled-popup-request',
+      'auth/operation-not-supported-in-this-environment'
+    ]);
+
+    try {
       const userCredential = await signInWithPopup(auth, provider);
-      
-      // Check if user document exists, if not create it
-      const userDocRef = doc(db, 'users', userCredential.user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      
-      if (!userDocSnap.exists()) {
-        // New user - create document
-        await setDoc(userDocRef, {
-          uid: userCredential.user.uid,
-          email: userCredential.user.email,
-          displayName: userCredential.user.displayName || '',
-          photoURL: userCredential.user.photoURL || '',
-          createdAt: serverTimestamp(),
-          resumeCount: 0,
-          lastLogin: serverTimestamp()
-        });
-      } else {
-        // Existing user - update last login
-        await setDoc(
-          userDocRef,
-          { lastLogin: serverTimestamp() },
-          { merge: true }
-        );
-      }
-      
+      await ensureGoogleUserDocument(userCredential.user);
       toast.success('Signed in with Google!');
       return userCredential;
     } catch (error) {
       console.error('Google sign-in error:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-      
-      if (error.code === 'auth/popup-closed-by-user') {
-        // User closed the popup, don't show error
+
+      if (popupFallbackCodes.has(error.code)) {
+        toast.message('Redirecting to Google sign-in...', { duration: 3000 });
+        await signInWithRedirect(auth, provider);
         return;
-      } else if (error.code === 'auth/network-request-failed') {
-        toast.error('Network error. Please check your internet connection and Firebase configuration.');
+      }
+
+      if (error.code === 'auth/network-request-failed') {
+        toast.error('Network error. Check your connection and Firebase settings.');
       } else if (error.code === 'auth/operation-not-allowed') {
-        toast.error('Google sign-in is not enabled. Please enable it in Firebase Console.');
+        toast.error('Google sign-in is not enabled in Firebase Console.');
       } else if (error.code === 'auth/unauthorized-domain') {
-        toast.error('This domain is not authorized. Please add it in Firebase Console.');
+        toast.error(
+          `Domain not authorized. Add "${window.location.hostname}" in Firebase → Authentication → Settings → Authorized domains.`
+        );
       } else {
         toast.error(getErrorMessage(error.code) || 'Failed to sign in with Google. Please try again.');
       }
@@ -458,8 +466,39 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Monitor auth state
+  // Monitor auth state + complete Google redirect sign-in
   useEffect(() => {
+    if (!auth) {
+      if (!isFirebaseConfigured) {
+        toast.error('Firebase is not configured. Sign-in will not work until env variables are set.');
+      }
+      setLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    const finishAuthInit = async () => {
+      try {
+        const redirectResult = await getRedirectResult(auth);
+        if (redirectResult?.user) {
+          await ensureGoogleUserDocument(redirectResult.user);
+          toast.success('Signed in with Google!');
+        }
+      } catch (error) {
+        console.error('Google redirect result error:', error);
+        if (error.code !== 'auth/popup-closed-by-user') {
+          toast.error(getErrorMessage(error.code) || 'Google sign-in failed after redirect.');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    finishAuthInit();
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       if (user) {
@@ -467,10 +506,15 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUserData(null);
       }
-      setLoading(false);
+      if (isMounted) {
+        setLoading(false);
+      }
     });
 
-    return unsubscribe;
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   const value = {
@@ -482,7 +526,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     incrementResumeCount,
     checkEmailExists,
-    loading
+    loading,
+    isAuthReady: !!auth
   };
 
   return (

@@ -53,6 +53,6 @@ if (isFirebaseConfigured) {
   console.error('Firebase configuration is incomplete. Please check your .env file.');
 }
 
-export { db, auth };
+export { db, auth, isFirebaseConfigured };
 export default app;
 

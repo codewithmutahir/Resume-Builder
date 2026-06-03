@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import { AuthProvider } from './context/AuthContext';
 import ResumeBuilder from './pages/ResumeBuilder';
 import Login from './pages/Login';
@@ -11,6 +12,7 @@ import '@/App.css';
 function App() {
   return (
     <div className="App">
+      <Toaster position="top-center" richColors closeButton />
       <BrowserRouter>
         <AuthProvider>
           <Routes>

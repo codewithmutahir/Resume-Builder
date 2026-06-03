@@ -29,7 +29,7 @@ const Signup = () => {
   const [emailProvider, setEmailProvider] = useState(null);
   const [checkingEmail, setCheckingEmail] = useState(false);
   
-  const { signup, signInWithGoogle, checkEmailExists } = useAuth();
+  const { signup, signInWithGoogle, checkEmailExists, isAuthReady } = useAuth();
   const navigate = useNavigate();
 
   // Real-time validation
@@ -128,6 +128,11 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isAuthReady) {
+      toast.error('Sign-up is unavailable. Firebase environment variables are missing on the server.');
+      return;
+    }
     
     // Validate all fields
     const nameValidation = validateName(name);
@@ -191,10 +196,16 @@ const Signup = () => {
   };
 
   const handleGoogleSignIn = async () => {
+    if (!isAuthReady) {
+      toast.error('Google sign-in is unavailable. Firebase is not configured on the server.');
+      return;
+    }
     setLoading(true);
     try {
-      await signInWithGoogle();
-      navigate('/');
+      const result = await signInWithGoogle();
+      if (result) {
+        navigate('/');
+      }
     } catch (error) {
       // Error is handled in AuthContext
     } finally {
@@ -261,6 +272,12 @@ const Signup = () => {
             </h1>
             <p className="text-sm text-muted-foreground">Create your account</p>
           </div>
+
+          {!isAuthReady && (
+            <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive relative z-10">
+              Authentication is not configured. Set Firebase env variables in Vercel, then redeploy.
+            </div>
+          )}
 
           {/* Google Sign In Button */}
           <Button
@@ -492,20 +509,8 @@ const Signup = () => {
 
             <Button
               type="submit"
-              disabled={
-                loading || 
-                checkingEmail ||
-                !!nameError || 
-                !!emailError || 
-                !!passwordError || 
-                !!confirmPasswordError || 
-                emailExists ||
-                !name || 
-                !email || 
-                !password || 
-                !confirmPassword
-              }
-                  className="w-full bg-primary hover:bg-primary/90 text-white shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading || checkingEmail}
+              className="w-full bg-primary hover:bg-primary/90 text-white shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Creating account...' : checkingEmail ? 'Checking email...' : emailExists ? 'Email already exists' : 'Create Account'}
             </Button>

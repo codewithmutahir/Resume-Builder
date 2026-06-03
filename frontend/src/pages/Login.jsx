@@ -17,7 +17,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
   
-  const { login, signInWithGoogle } = useAuth();
+  const { login, signInWithGoogle, isAuthReady } = useAuth();
   const navigate = useNavigate();
 
   // Real-time email validation
@@ -32,6 +32,11 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isAuthReady) {
+      toast.error('Sign-in is unavailable. Firebase environment variables are missing on the server.');
+      return;
+    }
     
     // Validate email
     const emailValidation = validateEmail(email);
@@ -59,10 +64,16 @@ const Login = () => {
   };
 
   const handleGoogleSignIn = async () => {
+    if (!isAuthReady) {
+      toast.error('Google sign-in is unavailable. Firebase is not configured on the server.');
+      return;
+    }
     setLoading(true);
     try {
-      await signInWithGoogle();
-      navigate('/');
+      const result = await signInWithGoogle();
+      if (result) {
+        navigate('/');
+      }
     } catch (error) {
       // Error is handled in AuthContext
     } finally {
@@ -129,6 +140,12 @@ const Login = () => {
             </h1>
             <p className="text-sm text-muted-foreground">Sign in to continue</p>
           </div>
+
+          {!isAuthReady && (
+            <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive relative z-10">
+              Authentication is not configured. Set Firebase env variables in Vercel, then redeploy.
+            </div>
+          )}
 
           {/* Google Sign In Button */}
           <Button
@@ -215,7 +232,7 @@ const Login = () => {
 
             <Button
               type="submit"
-              disabled={loading || !!emailError || !email || !password}
+              disabled={loading}
               className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Signing in...' : 'Sign In'}

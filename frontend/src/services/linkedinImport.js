@@ -15,11 +15,8 @@ const SAFE = {
 };
 
 function getApiBase() {
-  const isLocal =
-    typeof window !== 'undefined' &&
-    /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname);
-  if (isLocal) return '';
-  return (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
+  // Always same-origin so custom domains (e.g. resume.elitesolutionusa.com) hit /api/*
+  return '';
 }
 
 function getRedirectUri() {

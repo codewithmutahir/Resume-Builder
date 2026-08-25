@@ -102,16 +102,8 @@ export function storeJobDescription(jd) {
 }
 
 function getGenerateUrl() {
-  const isLocal =
-    typeof window !== 'undefined' &&
-    /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname);
-
-  if (isLocal) {
-    return '/api/generate';
-  }
-
-  const base = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
-  return `${base}/api/generate`;
+  // Same-origin on localhost (setupProxy) and on Vercel/custom domain
+  return '/api/generate';
 }
 
 function toUserMessage(status, apiError) {

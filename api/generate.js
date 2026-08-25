@@ -411,6 +411,7 @@ function getAllowedOrigins() {
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://resume-builder-three-ebon.vercel.app',
+    'https://resume.elitesolutionusa.com',
   ];
   return [
     ...new Set([

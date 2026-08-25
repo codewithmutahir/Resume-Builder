@@ -1,23 +1,28 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { AppleLoader } from '@/components/ui/AppleLoader';
 
 const ProtectedRoute = ({ children }) => {
   const { currentUser, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-secondary/20">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
+        <div className="rounded-2xl bg-white shadow-xl shadow-black/5 border border-border/60 px-8 py-6">
+          <AppleLoader size={22} label="Loading" />
         </div>
       </div>
     );
   }
 
-  return currentUser ? children : <Navigate to="/login" />;
+  if (!currentUser) {
+    const next = `${location.pathname}${location.search || ''}`;
+    return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />;
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;
-

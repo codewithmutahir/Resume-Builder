@@ -33,7 +33,7 @@ const ResumeBuilder = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       // Error handled in AuthContext
     }
@@ -174,7 +174,8 @@ const ResumeBuilder = () => {
                   <span className="text-sm font-medium bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Live Preview</span>
                 </motion.div>
 
-                {/* User Menu */}
+                {/* User Menu / Sign In */}
+                {currentUser ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -216,6 +217,15 @@ const ResumeBuilder = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                ) : (
+                  <Button
+                    size="sm"
+                    className="bg-primary hover:bg-primary/90 text-white shadow-md"
+                    onClick={() => navigate('/login?next=/')}
+                  >
+                    Sign In
+                  </Button>
+                )}
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { FileText, Mail, Lock, User, Chrome, CheckCircle2, XCircle, Eye, EyeOff 
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { validateEmail, validatePassword, validateName, validatePasswordMatch, getPasswordStrength } from '../utils/validation';
+import { AppleLoader } from '@/components/ui/AppleLoader';
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -29,8 +30,42 @@ const Signup = () => {
   const [emailProvider, setEmailProvider] = useState(null);
   const [checkingEmail, setCheckingEmail] = useState(false);
   
-  const { signup, signInWithGoogle, checkEmailExists, isAuthReady } = useAuth();
+  const { signup, signInWithGoogle, checkEmailExists, isAuthReady, currentUser } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const nextPath = searchParams.get('next') || '/';
+
+  // After Google redirect returns successfully, leave the signup page
+  useEffect(() => {
+    if (currentUser) {
+      navigate(nextPath, { replace: true });
+    }
+  }, [currentUser, navigate, nextPath]);
+
+  // Reset spinner when returning via browser Back (bfcache) after Google redirect
+  useEffect(() => {
+    const clearStuckLoading = () => {
+      setLoading(false);
+      try {
+        sessionStorage.removeItem('resume_google_redirect');
+      } catch {
+        // ignore
+      }
+    };
+
+    const onPageShow = (event) => {
+      if (event.persisted || sessionStorage.getItem('resume_google_redirect')) {
+        clearStuckLoading();
+      }
+    };
+
+    window.addEventListener('pageshow', onPageShow);
+    if (sessionStorage.getItem('resume_google_redirect')) {
+      clearStuckLoading();
+    }
+
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, []);
 
   // Real-time validation
   useEffect(() => {
@@ -130,7 +165,7 @@ const Signup = () => {
     e.preventDefault();
 
     if (!isAuthReady) {
-      toast.error('Sign-up is unavailable. Firebase environment variables are missing on the server.');
+      toast.error('Sign-up is temporarily unavailable. Please try again later.');
       return;
     }
     
@@ -181,12 +216,12 @@ const Signup = () => {
     setLoading(true);
     try {
       await signup(email, password, name);
-      navigate('/');
+      navigate(nextPath);
     } catch (error) {
       // If email already exists with Google, navigate to login
       if (error.code === 'auth/email-already-in-use' && error.provider === 'google') {
         setTimeout(() => {
-          navigate('/login');
+          navigate(`/login?next=${encodeURIComponent(nextPath)}`);
         }, 2000);
       }
       // Error is handled in AuthContext
@@ -197,14 +232,14 @@ const Signup = () => {
 
   const handleGoogleSignIn = async () => {
     if (!isAuthReady) {
-      toast.error('Google sign-in is unavailable. Firebase is not configured on the server.');
+      toast.error('Google sign-in is temporarily unavailable. Please try again later.');
       return;
     }
     setLoading(true);
     try {
       const result = await signInWithGoogle();
       if (result) {
-        navigate('/');
+        navigate(nextPath);
       }
     } catch (error) {
       // Error is handled in AuthContext
@@ -275,7 +310,7 @@ const Signup = () => {
 
           {!isAuthReady && (
             <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive relative z-10">
-              Authentication is not configured. Set Firebase env variables in Vercel, then redeploy.
+              Sign-up is temporarily unavailable. Please try again later.
             </div>
           )}
 
@@ -287,8 +322,14 @@ const Signup = () => {
             className="w-full mb-6 bg-white hover:bg-muted border border-border shadow-sm"
             variant="outline"
           >
-            <Chrome className="w-5 h-5 mr-2" />
-            Continue with Google
+            {loading ? (
+              <AppleLoader size={16} label="Signing in" labelClassName="text-foreground" />
+            ) : (
+              <>
+                <Chrome className="w-5 h-5 mr-2" />
+                Continue with Google
+              </>
+            )}
           </Button>
 
           <div className="relative mb-6">
@@ -349,7 +390,7 @@ const Signup = () => {
                 {email && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                     {checkingEmail ? (
-                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                      <AppleLoader size={16} tone="primary" />
                     ) : emailError ? (
                       <XCircle className="w-5 h-5 text-destructive" />
                     ) : (
@@ -359,9 +400,9 @@ const Signup = () => {
                 )}
               </div>
               {checkingEmail && (
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  Checking email availability...
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <AppleLoader size={12} tone="primary" />
+                  Checking email availability
                 </p>
               )}
               {emailError && !checkingEmail && (
@@ -512,7 +553,15 @@ const Signup = () => {
               disabled={loading || checkingEmail}
               className="w-full bg-primary hover:bg-primary/90 text-white shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating account...' : checkingEmail ? 'Checking email...' : emailExists ? 'Email already exists' : 'Create Account'}
+              {loading ? (
+                <AppleLoader size={16} tone="light" label="Creating account" labelClassName="text-white" />
+              ) : checkingEmail ? (
+                <AppleLoader size={16} tone="light" label="Checking email" labelClassName="text-white" />
+              ) : emailExists ? (
+                'Email already exists'
+              ) : (
+                'Create Account'
+              )}
             </Button>
           </form>
 
@@ -521,7 +570,7 @@ const Signup = () => {
             <p>
               <span className="text-muted-foreground">Already have an account? </span>
               <Link
-                to="/login"
+                to={`/login?next=${encodeURIComponent(nextPath)}`}
                 className="text-primary hover:text-accent font-medium hover:underline"
               >
                 Sign in

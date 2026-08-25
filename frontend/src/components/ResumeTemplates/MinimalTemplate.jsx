@@ -1,4 +1,5 @@
 import React from 'react';
+import { resolveTypography } from '@/constants/typography';
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -7,7 +8,7 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const MinimalTemplate = ({ data, colors }) => {
+export const MinimalTemplate = ({ data, colors, typography }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
   
   // Use provided colors or fallback to defaults
@@ -16,12 +17,13 @@ export const MinimalTemplate = ({ data, colors }) => {
   const accentColor = colors?.accent || '#9ca3af';
   const textColor = colors?.text || '#111827';
   const textSecondaryColor = colors?.textSecondary || '#374151';
+  const fonts = resolveTypography(typography);
 
   return (
-    <div style={{ backgroundColor: 'white', color: textColor, minHeight: '100%', padding: '48px', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ backgroundColor: 'white', color: textColor, minHeight: '100%', padding: '40px', fontFamily: fonts.bodyCss }}>
       {/* Header */}
-      <div style={{ marginBottom: '32px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', marginBottom: '16px' }}>
+      <div style={{ marginBottom: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', marginBottom: '6px' }}>
           {personal.picture && (
             <img
               src={personal.picture}
@@ -37,7 +39,7 @@ export const MinimalTemplate = ({ data, colors }) => {
             />
           )}
           <div style={{ flex: 1 }}>
-            <h1 style={{ fontSize: '3rem', fontWeight: '300', marginBottom: '4px', letterSpacing: '-0.025em' }}>{personal.fullName || 'Your Name'}</h1>
+            <h1 style={{ fontSize: '3rem', fontWeight: '300', marginBottom: '4px', letterSpacing: '-0.025em', fontFamily: fonts.headingCss }}>{personal.fullName || 'Your Name'}</h1>
             <p style={{ fontSize: '1.125rem', color: secondaryColor, fontWeight: '300' }}>{personal.title || 'Professional Title'}</p>
           </div>
         </div>
@@ -54,21 +56,21 @@ export const MinimalTemplate = ({ data, colors }) => {
       <div>
         {/* Summary */}
         {personal.summary && (
-          <div style={{ marginBottom: '32px' }}>
+          <div style={{ marginBottom: '14px' }}>
             <p style={{ color: textSecondaryColor, lineHeight: '1.625' }}>{personal.summary}</p>
           </div>
         )}
 
         {/* Experience */}
         {experience.length > 0 && (
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px', fontFamily: fonts.headingCss }}>
               Experience
             </h2>
             <div>
               {experience.map((exp, index) => (
-                <div key={index} style={{ marginBottom: index < experience.length - 1 ? '24px' : '0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                <div key={index} style={{ marginBottom: index < experience.length - 1 ? '10px' : '0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '3px' }}>
                     <div>
                       <h3 style={{ fontSize: '1.125rem', fontWeight: '500', color: textColor }}>{exp.position}</h3>
                       <p style={{ color: secondaryColor }}>{exp.company}</p>
@@ -89,13 +91,13 @@ export const MinimalTemplate = ({ data, colors }) => {
 
         {/* Education */}
         {education.length > 0 && (
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px', fontFamily: fonts.headingCss }}>
               Education
             </h2>
             <div>
               {education.map((edu, index) => (
-                <div key={index} style={{ marginBottom: index < education.length - 1 ? '16px' : '0' }}>
+                <div key={index} style={{ marginBottom: index < education.length - 1 ? '8px' : '0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
                       <h3 style={{ fontSize: '1.125rem', fontWeight: '500', color: textColor }}>{edu.degree}</h3>
@@ -117,8 +119,8 @@ export const MinimalTemplate = ({ data, colors }) => {
 
         {/* Skills */}
         {skills.length > 0 && (
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px', fontFamily: fonts.headingCss }}>
               Skills
             </h2>
             <p style={{ color: textSecondaryColor }}>
@@ -129,13 +131,13 @@ export const MinimalTemplate = ({ data, colors }) => {
 
         {/* Projects */}
         {projects.length > 0 && (
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px', fontFamily: fonts.headingCss }}>
               Projects
             </h2>
             <div>
               {projects.map((project, index) => (
-                <div key={index} style={{ marginBottom: index < projects.length - 1 ? '16px' : '0' }}>
+                <div key={index} style={{ marginBottom: index < projects.length - 1 ? '8px' : '0' }}>
                   <h3 style={{ fontSize: '1.125rem', fontWeight: '500', color: textColor }}>{project.name}</h3>
                   {project.technologies && (
                     <p style={{ fontSize: '0.875rem', color: secondaryColor }}>{project.technologies}</p>
@@ -152,8 +154,8 @@ export const MinimalTemplate = ({ data, colors }) => {
 
         {/* Certifications */}
         {certifications.length > 0 && (
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px', fontFamily: fonts.headingCss }}>
               Certifications
             </h2>
             <div>
@@ -173,7 +175,7 @@ export const MinimalTemplate = ({ data, colors }) => {
         {/* References */}
         {references.length > 0 && (
           <div>
-            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '0.75rem', fontWeight: '600', color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px', fontFamily: fonts.headingCss }}>
               References
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>

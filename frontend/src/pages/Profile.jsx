@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { toast } from 'sonner';
+import { AppleLoader } from '@/components/ui/AppleLoader';
 
 const Profile = () => {
   const { currentUser, userData, logout } = useAuth();
@@ -281,9 +282,8 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading profile...</p>
+        <div className="rounded-2xl bg-white shadow-xl shadow-black/5 border border-border/60 px-8 py-6">
+          <AppleLoader size={22} label="Loading profile" />
         </div>
       </div>
     );
@@ -436,8 +436,8 @@ const Profile = () => {
               >
                 {refreshing ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                    Refreshing...
+                    <AppleLoader size={14} tone="primary" />
+                    Refreshing
                   </>
                 ) : (
                   <>

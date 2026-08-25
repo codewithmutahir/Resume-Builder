@@ -40,6 +40,11 @@ export const SkillsForm = () => {
   // Debounce input value for performance (300ms delay)
   const debouncedInput = useDebounce(inputValue, 300);
 
+  // Keep chips in sync when ATS adds skills from outside
+  useEffect(() => {
+    setSkills(resumeData.skills || []);
+  }, [resumeData.skills]);
+
   // Filter suggestions based on debounced input
   const filteredSuggestions = useMemo(() => {
     if (!debouncedInput.trim()) {

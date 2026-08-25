@@ -5,6 +5,7 @@ import { Check } from 'lucide-react';
 import { useResume } from '../../context/ResumeContext';
 import { cn } from '@/lib/utils';
 import { ColorPicker } from './ColorPicker';
+import { TypographyPicker } from './TypographyPicker';
 
 const templates = [
   {
@@ -101,9 +102,10 @@ export const TemplateSelector = () => {
         ))}
       </div>
 
-      {/* Color Picker */}
-      <div className="mt-8">
+      {/* Color + Typography */}
+      <div className="mt-8 space-y-6">
         <ColorPicker />
+        <TypographyPicker />
       </div>
     </div>
   );

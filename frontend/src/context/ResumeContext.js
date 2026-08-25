@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { DEFAULT_TYPOGRAPHY_BY_TEMPLATE } from '@/constants/typography';
 
 const ResumeContext = createContext();
 
@@ -12,6 +13,7 @@ const ResumeContext = createContext();
 
 const STORAGE_KEY = 'resume_builder_data';
 const COLOR_STORAGE_KEY = 'resume_builder_colors';
+const TYPOGRAPHY_STORAGE_KEY = 'resume_builder_typography';
 
 // Default colors for each template
 const defaultColors = {
@@ -51,6 +53,8 @@ const defaultColors = {
     textSecondary: '#374151'
   }
 };
+
+const defaultTypography = { ...DEFAULT_TYPOGRAPHY_BY_TEMPLATE };
 
 const initialData = {
   personal: {
@@ -103,6 +107,19 @@ const ResumeProvider = ({ children }) => {
     }
   });
 
+  const [templateTypography, setTemplateTypography] = useState(() => {
+    try {
+      const saved = localStorage.getItem(TYPOGRAPHY_STORAGE_KEY);
+      if (saved) {
+        return { ...defaultTypography, ...JSON.parse(saved) };
+      }
+      return defaultTypography;
+    } catch (error) {
+      console.error('Error loading typography data:', error);
+      return defaultTypography;
+    }
+  });
+
   // Save to localStorage whenever data changes
   useEffect(() => {
     try {
@@ -121,23 +138,44 @@ const ResumeProvider = ({ children }) => {
     }
   }, [templateColors]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(TYPOGRAPHY_STORAGE_KEY, JSON.stringify(templateTypography));
+    } catch (error) {
+      console.error('Error saving typography data:', error);
+    }
+  }, [templateTypography]);
+
   const updatePersonal = (data) => {
-    setResumeData(prev => ({
+    setResumeData((prev) => ({
       ...prev,
-      personal: { ...prev.personal, ...data }
+      personal: { ...prev.personal, ...data },
     }));
   };
 
   const updateEducation = (education) => {
-    setResumeData(prev => ({ ...prev, education }));
+    setResumeData((prev) => ({
+      ...prev,
+      education:
+        typeof education === 'function' ? education(prev.education || []) : education,
+    }));
   };
 
   const updateExperience = (experience) => {
-    setResumeData(prev => ({ ...prev, experience }));
+    setResumeData((prev) => ({
+      ...prev,
+      experience:
+        typeof experience === 'function'
+          ? experience(prev.experience || [])
+          : experience,
+    }));
   };
 
   const updateSkills = (skills) => {
-    setResumeData(prev => ({ ...prev, skills }));
+    setResumeData((prev) => ({
+      ...prev,
+      skills: typeof skills === 'function' ? skills(prev.skills || []) : skills,
+    }));
   };
 
   const updateCertifications = (certifications) => {
@@ -159,12 +197,21 @@ const ResumeProvider = ({ children }) => {
     }));
   };
 
+  const updateTemplateTypography = (templateId, presetId) => {
+    setTemplateTypography((prev) => ({
+      ...prev,
+      [templateId]: presetId,
+    }));
+  };
+
   const resetResume = () => {
     setResumeData(initialData);
     setCurrentStep(0);
     setTemplateColors(defaultColors);
+    setTemplateTypography(defaultTypography);
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(COLOR_STORAGE_KEY);
+    localStorage.removeItem(TYPOGRAPHY_STORAGE_KEY);
   };
 
   const value = {
@@ -175,6 +222,8 @@ const ResumeProvider = ({ children }) => {
     setSelectedTemplate,
     templateColors,
     updateTemplateColors,
+    templateTypography,
+    updateTemplateTypography,
     updatePersonal,
     updateEducation,
     updateExperience,

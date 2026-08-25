@@ -1,7 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image, Svg, Path } from '@react-pdf/renderer';
+import { resolveTypography } from '@/constants/typography';
 
-// Icon components
 const MailIcon = () => (
   <Svg width="10" height="10" viewBox="0 0 24 24" style={{ marginRight: 4 }}>
     <Path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#ffffff" strokeWidth="2" fill="none"/>
@@ -43,153 +43,158 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const ModernTemplatePDF = ({ data, colors }) => {
+export const ModernTemplatePDF = ({ data, colors, typography }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
 
-  // Use provided colors or fallback to defaults
   const primaryColor = colors?.primary || '#2563eb';
   const secondaryColor = colors?.secondary || '#1e40af';
   const accentColor = colors?.accent || '#dbeafe';
   const textColor = colors?.text || '#111827';
   const textSecondaryColor = colors?.textSecondary || '#374151';
+  const fonts = resolveTypography(typography);
 
-  // Create styles dynamically with colors
+  const PAGE_PAD = 40;
+
   const styles = StyleSheet.create({
     page: {
       backgroundColor: '#ffffff',
-      padding: 0,
-      fontFamily: 'Helvetica',
+      paddingTop: PAGE_PAD,
+      paddingBottom: PAGE_PAD,
+      paddingHorizontal: PAGE_PAD,
+      fontFamily: fonts.body,
     },
     header: {
       backgroundColor: primaryColor,
       color: '#ffffff',
-      padding: 32,
+      marginTop: -PAGE_PAD,
+      marginHorizontal: -PAGE_PAD,
+      padding: PAGE_PAD,
+      marginBottom: 14,
     },
     headerContent: {
       flexDirection: 'row',
       alignItems: 'flex-start',
-      gap: 24,
+      gap: 20,
     },
     profileImage: {
-      width: 100,
-      height: 100,
-      borderRadius: 50,
-      borderWidth: 4,
+      width: 88,
+      height: 88,
+      borderRadius: 44,
+      borderWidth: 3,
       borderColor: 'rgba(255, 255, 255, 0.3)',
     },
     headerText: {
       flex: 1,
     },
     name: {
-      fontSize: 28,
+      fontFamily: fonts.heading,
+      fontSize: 26,
       fontWeight: 'bold',
-      marginBottom: 6,
+      marginBottom: 4,
     },
     title: {
-      fontSize: 16,
+      fontSize: 14,
       color: accentColor,
-      marginBottom: 16,
+      marginBottom: 10,
     },
     contactInfo: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      marginTop: 16,
-      fontSize: 11,
+      marginTop: 10,
+      fontSize: 10,
     },
     contactItem: {
-      fontSize: 11,
-    },
-    content: {
-      padding: 32,
+      fontSize: 10,
     },
     section: {
-      marginBottom: 24,
-    },
-    sectionTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: secondaryColor,
-      paddingBottom: 8,
-      borderBottomWidth: 2,
-      borderBottomColor: primaryColor,
       marginBottom: 12,
     },
+    sectionTitle: {
+      fontFamily: fonts.heading,
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: secondaryColor,
+      paddingBottom: 4,
+      borderBottomWidth: 2,
+      borderBottomColor: primaryColor,
+      marginBottom: 6,
+    },
     subsection: {
-      marginBottom: 16,
+      marginBottom: 8,
     },
     subsectionHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 4,
-    },
-    subsectionTitle: {
-      fontSize: 13,
-      fontWeight: 'bold',
-      color: textColor,
       marginBottom: 2,
     },
-    subsectionCompany: {
+    subsectionTitle: {
+      fontFamily: fonts.heading,
       fontSize: 11,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 1,
+    },
+    subsectionCompany: {
+      fontSize: 10,
       color: secondaryColor,
       fontWeight: 'bold',
     },
     subsectionDate: {
-      fontSize: 11,
+      fontSize: 10,
       color: textSecondaryColor,
       textAlign: 'right',
     },
     subsectionLocation: {
-      fontSize: 11,
+      fontSize: 10,
       color: textSecondaryColor,
       textAlign: 'right',
     },
     text: {
-      fontSize: 11,
-      lineHeight: 1.6,
+      fontSize: 10,
+      lineHeight: 1.45,
       color: textSecondaryColor,
-      marginTop: 8,
+      marginTop: 3,
     },
     skillsContainer: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      marginTop: 8,
+      marginTop: 2,
     },
     skillBadge: {
       backgroundColor: accentColor,
       color: secondaryColor,
-      fontSize: 11,
+      fontSize: 9,
       fontWeight: 'bold',
-      padding: '6 16',
+      padding: '4 10',
       borderRadius: 100,
-      marginRight: 8,
-      marginBottom: 8,
+      marginRight: 6,
+      marginBottom: 6,
     },
     refGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: 16,
+      gap: 12,
     },
     refItem: {
       width: '45%',
     },
     refName: {
-      fontSize: 11,
+      fontSize: 10,
       fontWeight: 'bold',
       color: textColor,
-      marginBottom: 2,
+      marginBottom: 1,
     },
     refDetail: {
-      fontSize: 10,
+      fontSize: 9,
       color: textSecondaryColor,
-      marginBottom: 2,
+      marginBottom: 1,
     },
   });
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
+      <Page size="A4" style={styles.page} wrap>
+        <View style={styles.header} wrap={false}>
           <View style={styles.headerContent}>
             {personal?.picture && (
               <Image
@@ -203,31 +208,31 @@ export const ModernTemplatePDF = ({ data, colors }) => {
 
               <View style={styles.contactInfo}>
                 {personal?.email && (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 14, marginBottom: 3 }}>
                     <MailIcon />
                     <Text style={styles.contactItem}>{personal.email}</Text>
                   </View>
                 )}
                 {personal?.phone && (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 14, marginBottom: 3 }}>
                     <PhoneIcon />
                     <Text style={styles.contactItem}>{personal.phone}</Text>
                   </View>
                 )}
                 {personal?.location && (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 14, marginBottom: 3 }}>
                     <LocationIcon />
                     <Text style={styles.contactItem}>{personal.location}</Text>
                   </View>
                 )}
                 {personal?.linkedin && (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 14, marginBottom: 3 }}>
                     <LinkedinIcon />
                     <Text style={styles.contactItem}>{personal.linkedin}</Text>
                   </View>
                 )}
                 {personal?.website && (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 14, marginBottom: 3 }}>
                     <GlobeIcon />
                     <Text style={styles.contactItem}>{personal.website}</Text>
                   </View>
@@ -237,130 +242,121 @@ export const ModernTemplatePDF = ({ data, colors }) => {
           </View>
         </View>
 
-        <View style={styles.content}>
-          {/* Summary */}
-          {personal?.summary && (
-            <View style={styles.section} wrap={false}>
-              <Text style={styles.sectionTitle}>Professional Summary</Text>
-              <Text style={styles.text}>{personal.summary}</Text>
-            </View>
-          )}
+        {personal?.summary && (
+          <View style={styles.section} wrap={false}>
+            <Text style={styles.sectionTitle}>Professional Summary</Text>
+            <Text style={styles.text}>{personal.summary}</Text>
+          </View>
+        )}
 
-          {/* Experience */}
-          {experience && experience.length > 0 && (
-            <View style={styles.section} wrap={false}>
-              <Text style={styles.sectionTitle}>Work Experience</Text>
-              {experience.map((exp, index) => (
-                <View key={index} style={styles.subsection}>
-                  <View style={styles.subsectionHeader}>
-                    <View style={{ flexDirection: 'column', flex: 1 }}>
-                      <Text style={styles.subsectionTitle}>{exp.position}</Text>
-                      <Text style={styles.subsectionCompany}>{exp.company}</Text>
-                    </View>
-                    <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                      <Text style={styles.subsectionDate}>
-                        {formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}
-                      </Text>
-                      {exp.location && <Text style={styles.subsectionLocation}>{exp.location}</Text>}
-                    </View>
+        {experience && experience.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle} minPresenceAhead={40}>Work Experience</Text>
+            {experience.map((exp, index) => (
+              <View key={index} style={styles.subsection} wrap={false} minPresenceAhead={28}>
+                <View style={styles.subsectionHeader}>
+                  <View style={{ flexDirection: 'column', flex: 1 }}>
+                    <Text style={styles.subsectionTitle}>{exp.position}</Text>
+                    <Text style={styles.subsectionCompany}>{exp.company}</Text>
                   </View>
-                  {exp.description && <Text style={styles.text}>{exp.description}</Text>}
-                </View>
-              ))}
-            </View>
-          )}
-
-          {/* Education */}
-          {education && education.length > 0 && (
-            <View style={styles.section} wrap={false}>
-              <Text style={styles.sectionTitle}>Education</Text>
-              {education.map((edu, index) => (
-                <View key={index} style={styles.subsection}>
-                  <View style={styles.subsectionHeader}>
-                    <View style={{ flexDirection: 'column', flex: 1 }}>
-                      <Text style={styles.subsectionTitle}>{edu.degree}</Text>
-                      <Text style={styles.subsectionCompany}>{edu.school}</Text>
-                      {edu.field && <Text style={{ fontSize: 10, color: textSecondaryColor }}>{edu.field}</Text>}
-                    </View>
-                    <View>
-                      <Text style={styles.subsectionDate}>
-                        {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
-                      </Text>
-                    </View>
+                  <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                    <Text style={styles.subsectionDate}>
+                      {formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}
+                    </Text>
+                    {exp.location && <Text style={styles.subsectionLocation}>{exp.location}</Text>}
                   </View>
-                  {edu.description && <Text style={styles.text}>{edu.description}</Text>}
                 </View>
-              ))}
-            </View>
-          )}
-
-          {/* Skills */}
-          {skills && skills.length > 0 && (
-            <View style={styles.section} wrap={false}>
-              <Text style={styles.sectionTitle}>Skills</Text>
-              <View style={styles.skillsContainer}>
-                {skills.map((skill, index) => (
-                  <Text key={index} style={styles.skillBadge}>{skill}</Text>
-                ))}
+                {exp.description && <Text style={styles.text}>{exp.description}</Text>}
               </View>
-            </View>
-          )}
+            ))}
+          </View>
+        )}
 
-          {/* Projects */}
-          {projects && projects.length > 0 && (
-            <View style={styles.section} wrap={false}>
-              <Text style={styles.sectionTitle}>Projects</Text>
-              {projects.map((project, index) => (
-                <View key={index} style={styles.subsection}>
-                  <Text style={styles.subsectionTitle}>{project.name}</Text>
-                  {project.technologies && (
-                    <Text style={{ fontSize: 10, color: secondaryColor }}>{project.technologies}</Text>
-                  )}
-                  {project.description && <Text style={styles.text}>{project.description}</Text>}
-                  {project.link && (
-                    <Text style={{ fontSize: 10, color: primaryColor, marginTop: 4 }}>{project.link}</Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          )}
-
-          {/* Certifications */}
-          {certifications && certifications.length > 0 && (
-            <View style={styles.section} wrap={false}>
-              <Text style={styles.sectionTitle}>Certifications</Text>
-              {certifications.map((cert, index) => (
-                <View key={index} style={styles.subsection}>
-                  <Text style={styles.subsectionTitle}>{cert.name}</Text>
-                  <Text style={styles.subsectionCompany}>
-                    {cert.issuer} {cert.date && `• ${formatDate(cert.date)}`}
-                  </Text>
-                  {cert.credentialId && (
-                    <Text style={{ fontSize: 10, color: textSecondaryColor }}>Credential ID: {cert.credentialId}</Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          )}
-
-          {/* References */}
-          {references && references.length > 0 && (
-            <View style={styles.section} wrap={false}>
-              <Text style={styles.sectionTitle}>References</Text>
-              <View style={styles.refGrid}>
-                {references.map((ref, index) => (
-                  <View key={index} style={styles.refItem}>
-                    <Text style={styles.refName}>{ref.name}</Text>
-                    <Text style={styles.refDetail}>{ref.title}</Text>
-                    <Text style={styles.refDetail}>{ref.company}</Text>
-                    {ref.email && <Text style={{ fontSize: 10, color: primaryColor }}>{ref.email}</Text>}
-                    {ref.phone && <Text style={styles.refDetail}>{ref.phone}</Text>}
+        {education && education.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle} minPresenceAhead={40}>Education</Text>
+            {education.map((edu, index) => (
+              <View key={index} style={styles.subsection} wrap={false} minPresenceAhead={24}>
+                <View style={styles.subsectionHeader}>
+                  <View style={{ flexDirection: 'column', flex: 1 }}>
+                    <Text style={styles.subsectionTitle}>{edu.degree}</Text>
+                    <Text style={styles.subsectionCompany}>{edu.school}</Text>
+                    {edu.field && <Text style={{ fontSize: 9, color: textSecondaryColor }}>{edu.field}</Text>}
                   </View>
-                ))}
+                  <View>
+                    <Text style={styles.subsectionDate}>
+                      {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+                    </Text>
+                  </View>
+                </View>
+                {edu.description && <Text style={styles.text}>{edu.description}</Text>}
               </View>
+            ))}
+          </View>
+        )}
+
+        {skills && skills.length > 0 && (
+          <View style={styles.section} wrap={false}>
+            <Text style={styles.sectionTitle}>Skills</Text>
+            <View style={styles.skillsContainer}>
+              {skills.map((skill, index) => (
+                <Text key={index} style={styles.skillBadge}>{skill}</Text>
+              ))}
             </View>
-          )}
-        </View>
+          </View>
+        )}
+
+        {projects && projects.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle} minPresenceAhead={40}>Projects</Text>
+            {projects.map((project, index) => (
+              <View key={index} style={styles.subsection} wrap={false} minPresenceAhead={28}>
+                <Text style={styles.subsectionTitle}>{project.name}</Text>
+                {project.technologies && (
+                  <Text style={{ fontSize: 9, color: secondaryColor }}>{project.technologies}</Text>
+                )}
+                {project.description && <Text style={styles.text}>{project.description}</Text>}
+                {project.link && (
+                  <Text style={{ fontSize: 9, color: primaryColor, marginTop: 2 }}>{project.link}</Text>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {certifications && certifications.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle} minPresenceAhead={40}>Certifications</Text>
+            {certifications.map((cert, index) => (
+              <View key={index} style={styles.subsection} wrap={false} minPresenceAhead={20}>
+                <Text style={styles.subsectionTitle}>{cert.name}</Text>
+                <Text style={styles.subsectionCompany}>
+                  {cert.issuer} {cert.date && `• ${formatDate(cert.date)}`}
+                </Text>
+                {cert.credentialId && (
+                  <Text style={{ fontSize: 9, color: textSecondaryColor }}>Credential ID: {cert.credentialId}</Text>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {references && references.length > 0 && (
+          <View style={styles.section} wrap={false}>
+            <Text style={styles.sectionTitle}>References</Text>
+            <View style={styles.refGrid}>
+              {references.map((ref, index) => (
+                <View key={index} style={styles.refItem}>
+                  <Text style={styles.refName}>{ref.name}</Text>
+                  <Text style={styles.refDetail}>{ref.title}</Text>
+                  <Text style={styles.refDetail}>{ref.company}</Text>
+                  {ref.email && <Text style={{ fontSize: 9, color: primaryColor }}>{ref.email}</Text>}
+                  {ref.phone && <Text style={styles.refDetail}>{ref.phone}</Text>}
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
       </Page>
     </Document>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { FileText, Mail, Lock, Chrome, CheckCircle2, XCircle, Eye, EyeOff } from
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { validateEmail } from '../utils/validation';
+import { AppleLoader } from '@/components/ui/AppleLoader';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -17,8 +18,43 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
   
-  const { login, signInWithGoogle, isAuthReady } = useAuth();
+  const { login, signInWithGoogle, isAuthReady, currentUser } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const nextPath = searchParams.get('next') || '/';
+
+  // After Google redirect returns successfully, leave the login page
+  useEffect(() => {
+    if (currentUser) {
+      navigate(nextPath, { replace: true });
+    }
+  }, [currentUser, navigate, nextPath]);
+
+  // Reset spinner when returning via browser Back (bfcache) after Google redirect
+  useEffect(() => {
+    const clearStuckLoading = () => {
+      setLoading(false);
+      try {
+        sessionStorage.removeItem('resume_google_redirect');
+      } catch {
+        // ignore
+      }
+    };
+
+    const onPageShow = (event) => {
+      if (event.persisted || sessionStorage.getItem('resume_google_redirect')) {
+        clearStuckLoading();
+      }
+    };
+
+    window.addEventListener('pageshow', onPageShow);
+    // Also clear if we landed back mid-redirect without a full remount
+    if (sessionStorage.getItem('resume_google_redirect')) {
+      clearStuckLoading();
+    }
+
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, []);
 
   // Real-time email validation
   useEffect(() => {
@@ -34,7 +70,7 @@ const Login = () => {
     e.preventDefault();
 
     if (!isAuthReady) {
-      toast.error('Sign-in is unavailable. Firebase environment variables are missing on the server.');
+      toast.error('Sign-in is temporarily unavailable. Please try again later.');
       return;
     }
     
@@ -55,7 +91,7 @@ const Login = () => {
     setLoading(true);
     try {
       await login(email, password);
-      navigate('/');
+      navigate(nextPath);
     } catch (error) {
       // Error is handled in AuthContext
     } finally {
@@ -65,14 +101,14 @@ const Login = () => {
 
   const handleGoogleSignIn = async () => {
     if (!isAuthReady) {
-      toast.error('Google sign-in is unavailable. Firebase is not configured on the server.');
+      toast.error('Google sign-in is temporarily unavailable. Please try again later.');
       return;
     }
     setLoading(true);
     try {
       const result = await signInWithGoogle();
       if (result) {
-        navigate('/');
+        navigate(nextPath);
       }
     } catch (error) {
       // Error is handled in AuthContext
@@ -143,7 +179,7 @@ const Login = () => {
 
           {!isAuthReady && (
             <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive relative z-10">
-              Authentication is not configured. Set Firebase env variables in Vercel, then redeploy.
+              Sign-in is temporarily unavailable. Please try again later.
             </div>
           )}
 
@@ -155,8 +191,14 @@ const Login = () => {
             className="w-full mb-6 bg-white hover:bg-muted border border-border shadow-sm"
             variant="outline"
           >
-            <Chrome className="w-5 h-5 mr-2" />
-            Continue with Google
+            {loading ? (
+              <AppleLoader size={16} label="Signing in" labelClassName="text-foreground" />
+            ) : (
+              <>
+                <Chrome className="w-5 h-5 mr-2" />
+                Continue with Google
+              </>
+            )}
           </Button>
 
           <div className="relative mb-6">
@@ -235,7 +277,11 @@ const Login = () => {
               disabled={loading}
               className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? (
+                <AppleLoader size={16} tone="light" label="Signing in" labelClassName="text-white" />
+              ) : (
+                'Sign In'
+              )}
             </Button>
           </form>
 
@@ -244,7 +290,7 @@ const Login = () => {
             <p>
               <span className="text-muted-foreground">Don't have an account? </span>
               <Link
-                to="/signup"
+                to={`/signup?next=${encodeURIComponent(nextPath)}`}
                 className="text-primary hover:text-accent font-medium hover:underline"
               >
                 Sign up

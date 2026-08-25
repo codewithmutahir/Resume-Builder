@@ -1,5 +1,6 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Linkedin, Globe } from 'lucide-react';
+import { resolveTypography } from '@/constants/typography';
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -8,7 +9,7 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const ModernTemplate = ({ data, colors }) => {
+export const ModernTemplate = ({ data, colors, typography }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
   
   // Use provided colors or fallback to defaults
@@ -17,11 +18,12 @@ export const ModernTemplate = ({ data, colors }) => {
   const accentColor = colors?.accent || '#dbeafe';
   const textColor = colors?.text || '#111827';
   const textSecondaryColor = colors?.textSecondary || '#374151';
+  const fonts = resolveTypography(typography);
 
   return (
-    <div className="bg-white text-gray-900 min-h-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="bg-white text-gray-900 min-h-full" style={{ fontFamily: fonts.bodyCss }}>
       {/* Header */}
-      <div style={{ background: primaryColor, color: 'white', padding: '32px' }}>
+      <div style={{ background: primaryColor, color: 'white', padding: '28px' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px' }}>
           {personal.picture && (
             <img
@@ -38,8 +40,8 @@ export const ModernTemplate = ({ data, colors }) => {
             />
           )}
           <div style={{ flex: 1 }}>
-            <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '8px' }}>{personal.fullName || 'Your Name'}</h1>
-            <p style={{ fontSize: '1.25rem', color: accentColor, marginBottom: '16px' }}>{personal.title || 'Professional Title'}</p>
+            <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '8px', fontFamily: fonts.headingCss }}>{personal.fullName || 'Your Name'}</h1>
+            <p style={{ fontSize: '1.25rem', color: accentColor, marginBottom: '8px', fontFamily: fonts.headingCss }}>{personal.title || 'Professional Title'}</p>
             
             <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '16px', fontSize: '0.875rem' }}>
           {personal.email && (
@@ -77,11 +79,11 @@ export const ModernTemplate = ({ data, colors }) => {
         </div>
       </div>
 
-      <div style={{ padding: '32px' }}>
+      <div style={{ padding: '28px' }}>
         {/* Summary */}
         {personal.summary && (
-          <div style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '8px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '12px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '4px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '6px', fontFamily: fonts.headingCss }}>
               Professional Summary
             </h2>
             <p style={{ color: textSecondaryColor, lineHeight: '1.625' }}>{personal.summary}</p>
@@ -90,13 +92,13 @@ export const ModernTemplate = ({ data, colors }) => {
 
         {/* Experience */}
         {experience.length > 0 && (
-          <div style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '8px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '12px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '4px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '6px', fontFamily: fonts.headingCss }}>
               Work Experience
             </h2>
             <div>
               {experience.map((exp, index) => (
-                <div key={index} style={{ marginBottom: index < experience.length - 1 ? '16px' : '0' }}>
+                <div key={index} style={{ marginBottom: index < experience.length - 1 ? '8px' : '0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
                     <div>
                       <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: textColor }}>{exp.position}</h3>
@@ -118,8 +120,8 @@ export const ModernTemplate = ({ data, colors }) => {
 
         {/* Education */}
         {education.length > 0 && (
-          <div style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '8px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '12px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '4px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '6px', fontFamily: fonts.headingCss }}>
               Education
             </h2>
             <div>
@@ -146,8 +148,8 @@ export const ModernTemplate = ({ data, colors }) => {
 
         {/* Skills */}
         {skills.length > 0 && (
-          <div style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '8px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '12px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '4px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '6px', fontFamily: fonts.headingCss }}>
               Skills
             </h2>
             <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '8px' }}>
@@ -176,8 +178,8 @@ export const ModernTemplate = ({ data, colors }) => {
 
         {/* Projects */}
         {projects.length > 0 && (
-          <div style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '8px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '12px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '4px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '6px', fontFamily: fonts.headingCss }}>
               Projects
             </h2>
             <div>
@@ -199,8 +201,8 @@ export const ModernTemplate = ({ data, colors }) => {
 
         {/* Certifications */}
         {certifications.length > 0 && (
-          <div style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '8px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '12px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '4px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '6px', fontFamily: fonts.headingCss }}>
               Certifications
             </h2>
             <div>
@@ -220,7 +222,7 @@ export const ModernTemplate = ({ data, colors }) => {
         {/* References */}
         {references.length > 0 && (
           <div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '8px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '12px' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: secondaryColor, paddingBottom: '4px', borderBottom: `2px solid ${primaryColor}`, marginBottom: '6px', fontFamily: fonts.headingCss }}>
               References
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>

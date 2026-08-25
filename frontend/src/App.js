@@ -6,6 +6,7 @@ import ResumeBuilder from './pages/ResumeBuilder';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
+import LinkedInCallback from './pages/LinkedInCallback';
 import ProtectedRoute from './components/ProtectedRoute';
 import '@/App.css';
 
@@ -18,14 +19,8 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <ResumeBuilder />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/linkedin/callback" element={<LinkedInCallback />} />
+            <Route path="/" element={<ResumeBuilder />} />
             <Route
               path="/profile"
               element={

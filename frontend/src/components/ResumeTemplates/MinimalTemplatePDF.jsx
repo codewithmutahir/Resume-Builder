@@ -1,5 +1,6 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import { resolveTypography } from '@/constants/typography';
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -8,36 +9,37 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const MinimalTemplatePDF = ({ data, colors }) => {
+export const MinimalTemplatePDF = ({ data, colors, typography }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
   
-  // Use provided colors or fallback to defaults
   const primaryColor = colors?.primary || '#6b7280';
   const secondaryColor = colors?.secondary || '#4b5563';
   const accentColor = colors?.accent || '#9ca3af';
   const textColor = colors?.text || '#111827';
   const textSecondaryColor = colors?.textSecondary || '#374151';
+  const fonts = resolveTypography(typography);
 
-  // Create styles dynamically with colors
   const styles = StyleSheet.create({
     page: {
       backgroundColor: '#ffffff',
-      padding: 48,
-      fontFamily: 'Helvetica',
+      paddingTop: 40,
+      paddingBottom: 40,
+      paddingHorizontal: 40,
+      fontFamily: fonts.body,
     },
     header: {
-      marginBottom: 32,
+      marginBottom: 18,
     },
     headerContent: {
       flexDirection: 'row',
       alignItems: 'flex-start',
-      gap: 24,
-      marginBottom: 16,
+      gap: 18,
+      marginBottom: 10,
     },
     profileImage: {
-      width: 80,
-      height: 80,
-      borderRadius: 40,
+      width: 72,
+      height: 72,
+      borderRadius: 36,
       borderWidth: 2,
       borderColor: accentColor,
     },
@@ -45,101 +47,103 @@ export const MinimalTemplatePDF = ({ data, colors }) => {
       flex: 1,
     },
     name: {
-      fontSize: 36,
+      fontFamily: fonts.heading,
+      fontSize: 30,
       fontWeight: 'light',
-      marginBottom: 4,
+      marginBottom: 2,
       letterSpacing: -0.5,
     },
     title: {
-      fontSize: 13,
+      fontSize: 12,
       color: secondaryColor,
       fontWeight: 'light',
     },
     contactInfo: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      marginTop: 16,
-      fontSize: 11,
+      marginTop: 10,
+      fontSize: 10,
       color: secondaryColor,
     },
     contactItem: {
-      marginRight: 12,
+      marginRight: 10,
     },
     section: {
-      marginBottom: 32,
+      marginBottom: 14,
     },
     sectionTitle: {
-      fontSize: 10,
+      fontFamily: fonts.heading,
+      fontSize: 9,
       fontWeight: 'bold',
       color: primaryColor,
       textTransform: 'uppercase',
       letterSpacing: 1,
-      marginBottom: 16,
+      marginBottom: 6,
     },
     summaryText: {
-      fontSize: 11,
-      lineHeight: 1.6,
+      fontSize: 10,
+      lineHeight: 1.45,
       color: textSecondaryColor,
     },
     subsection: {
-      marginBottom: 24,
+      marginBottom: 10,
     },
     subsectionHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 8,
+      marginBottom: 3,
     },
     subsectionTitle: {
-      fontSize: 13,
+      fontFamily: fonts.heading,
+      fontSize: 11,
       fontWeight: 'bold',
       color: textColor,
-      marginBottom: 2,
+      marginBottom: 1,
     },
     subsectionCompany: {
-      fontSize: 11,
+      fontSize: 10,
       color: secondaryColor,
     },
     subsectionDate: {
-      fontSize: 11,
+      fontSize: 10,
       color: primaryColor,
       textAlign: 'right',
     },
     text: {
-      fontSize: 10,
-      lineHeight: 1.6,
+      fontSize: 9,
+      lineHeight: 1.45,
       color: textSecondaryColor,
-      marginTop: 8,
+      marginTop: 3,
     },
     skillsText: {
-      fontSize: 11,
+      fontSize: 10,
       color: textSecondaryColor,
     },
     refGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: 16,
+      gap: 12,
     },
     refItem: {
       width: '45%',
     },
     refName: {
-      fontSize: 11,
+      fontSize: 10,
       fontWeight: 'bold',
       color: textColor,
-      marginBottom: 2,
+      marginBottom: 1,
     },
     refDetail: {
-      fontSize: 10,
+      fontSize: 9,
       color: secondaryColor,
-      marginBottom: 2,
+      marginBottom: 1,
     },
   });
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
+      <Page size="A4" style={styles.page} wrap>
+        <View style={styles.header} wrap={false}>
           <View style={styles.headerContent}>
             {personal?.picture && (
               <Image
@@ -162,19 +166,17 @@ export const MinimalTemplatePDF = ({ data, colors }) => {
           </View>
         </View>
 
-        {/* Summary */}
         {personal?.summary && (
-          <View style={styles.section}>
+          <View style={styles.section} wrap={false}>
             <Text style={styles.summaryText}>{personal.summary}</Text>
           </View>
         )}
 
-        {/* Experience */}
         {experience && experience.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Experience</Text>
+            <Text style={styles.sectionTitle} minPresenceAhead={40}>Experience</Text>
             {experience.map((exp, index) => (
-              <View key={index} style={styles.subsection}>
+              <View key={index} style={styles.subsection} wrap={false} minPresenceAhead={28}>
                 <View style={styles.subsectionHeader}>
                   <View style={{ flexDirection: 'column', flex: 1 }}>
                     <Text style={styles.subsectionTitle}>{exp.position}</Text>
@@ -193,17 +195,16 @@ export const MinimalTemplatePDF = ({ data, colors }) => {
           </View>
         )}
 
-        {/* Education */}
         {education && education.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Education</Text>
+            <Text style={styles.sectionTitle} minPresenceAhead={40}>Education</Text>
             {education.map((edu, index) => (
-              <View key={index} style={{ marginBottom: 16 }}>
+              <View key={index} style={styles.subsection} wrap={false} minPresenceAhead={24}>
                 <View style={styles.subsectionHeader}>
                   <View style={{ flexDirection: 'column', flex: 1 }}>
                     <Text style={styles.subsectionTitle}>{edu.degree}</Text>
                     <Text style={styles.subsectionCompany}>{edu.school}</Text>
-                    {edu.field && <Text style={{ fontSize: 10, color: primaryColor }}>{edu.field}</Text>}
+                    {edu.field && <Text style={{ fontSize: 9, color: primaryColor }}>{edu.field}</Text>}
                   </View>
                   <View>
                     <Text style={styles.subsectionDate}>
@@ -217,54 +218,50 @@ export const MinimalTemplatePDF = ({ data, colors }) => {
           </View>
         )}
 
-        {/* Skills */}
         {skills && skills.length > 0 && (
-          <View style={styles.section}>
+          <View style={styles.section} wrap={false}>
             <Text style={styles.sectionTitle}>Skills</Text>
             <Text style={styles.skillsText}>{skills.join(', ')}</Text>
           </View>
         )}
 
-        {/* Projects */}
         {projects && projects.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Projects</Text>
+            <Text style={styles.sectionTitle} minPresenceAhead={40}>Projects</Text>
             {projects.map((project, index) => (
-              <View key={index} style={{ marginBottom: 16 }}>
+              <View key={index} style={styles.subsection} wrap={false} minPresenceAhead={28}>
                 <Text style={styles.subsectionTitle}>{project.name}</Text>
                 {project.technologies && (
-                  <Text style={{ fontSize: 10, color: secondaryColor }}>{project.technologies}</Text>
+                  <Text style={{ fontSize: 9, color: secondaryColor }}>{project.technologies}</Text>
                 )}
                 {project.description && <Text style={styles.text}>{project.description}</Text>}
                 {project.link && (
-                  <Text style={{ fontSize: 10, color: primaryColor, marginTop: 4 }}>{project.link}</Text>
+                  <Text style={{ fontSize: 9, color: primaryColor, marginTop: 2 }}>{project.link}</Text>
                 )}
               </View>
             ))}
           </View>
         )}
 
-        {/* Certifications */}
         {certifications && certifications.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Certifications</Text>
+            <Text style={styles.sectionTitle} minPresenceAhead={40}>Certifications</Text>
             {certifications.map((cert, index) => (
-              <View key={index} style={{ marginBottom: 12 }}>
-                <Text style={{ fontSize: 11, fontWeight: 'bold', color: textColor }}>{cert.name}</Text>
-                <Text style={{ fontSize: 10, color: secondaryColor }}>
+              <View key={index} style={{ marginBottom: 6 }} wrap={false} minPresenceAhead={20}>
+                <Text style={{ fontSize: 10, fontWeight: 'bold', color: textColor }}>{cert.name}</Text>
+                <Text style={{ fontSize: 9, color: secondaryColor }}>
                   {cert.issuer} {cert.date && `• ${formatDate(cert.date)}`}
                 </Text>
                 {cert.credentialId && (
-                  <Text style={{ fontSize: 9, color: primaryColor }}>ID: {cert.credentialId}</Text>
+                  <Text style={{ fontSize: 8, color: primaryColor }}>ID: {cert.credentialId}</Text>
                 )}
               </View>
             ))}
           </View>
         )}
 
-        {/* References */}
         {references && references.length > 0 && (
-          <View style={styles.section}>
+          <View style={styles.section} wrap={false}>
             <Text style={styles.sectionTitle}>References</Text>
             <View style={styles.refGrid}>
               {references.map((ref, index) => (
@@ -273,7 +270,7 @@ export const MinimalTemplatePDF = ({ data, colors }) => {
                   <Text style={styles.refDetail}>{ref.title}</Text>
                   <Text style={styles.refDetail}>{ref.company}</Text>
                   {ref.email && <Text style={styles.refDetail}>{ref.email}</Text>}
-                  {ref.phone && <Text style={{ fontSize: 10, color: primaryColor }}>{ref.phone}</Text>}
+                  {ref.phone && <Text style={{ fontSize: 9, color: primaryColor }}>{ref.phone}</Text>}
                 </View>
               ))}
             </View>

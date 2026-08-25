@@ -32,3 +32,14 @@
         transform: rotate(360deg);
     }
 }
+
+/* Apple-style activity indicator */
+.apple-spinner-spoke {
+  opacity: 0.15;
+  animation: apple-spinner-fade 1.2s linear infinite;
+}
+
+@keyframes apple-spinner-fade {
+  0% { opacity: 1; }
+  100% { opacity: 0.15; }
+}

@@ -1,21 +1,65 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { X, Upload, Loader2, Sparkles } from 'lucide-react';
+import { X, Upload, Sparkles, Linkedin } from 'lucide-react';
 import { useResume } from '../../context/ResumeContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AppleLoader } from '@/components/ui/AppleLoader';
+import { toast } from 'sonner';
+import { generateWithAI } from '@/services/aiGenerate';
+import {
+  beginLinkedInImport,
+  consumeLinkedInImportResult,
+  isLinkedInImportConfigured,
+} from '@/services/linkedinImport';
 
 export const PersonalDetailsForm = () => {
   const { resumeData, updatePersonal } = useResume();
   const { personal } = resumeData;
   const fileInputRef = useRef(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [linkedinLoading, setLinkedinLoading] = useState(false);
+  const importApplied = useRef(false);
 
   const handleChange = (field, value) => {
     updatePersonal({ [field]: value });
+  };
+
+  // Apply LinkedIn OAuth result after redirect back to the builder
+  useEffect(() => {
+    if (importApplied.current) return;
+    const imported = consumeLinkedInImportResult();
+    if (!imported) return;
+    importApplied.current = true;
+
+    const patch = {};
+    if (imported.fullName) patch.fullName = imported.fullName;
+    if (imported.email) patch.email = imported.email;
+    if (imported.picture) patch.picture = imported.picture;
+    if (imported.title) patch.title = imported.title;
+    if (imported.linkedin) patch.linkedin = imported.linkedin;
+
+    if (Object.keys(patch).length) {
+      updatePersonal(patch);
+      toast.message('Add your job title, summary, and experience to finish.');
+    }
+  }, [updatePersonal]);
+
+  const handleLinkedInImport = () => {
+    if (!isLinkedInImportConfigured()) {
+      toast.error('LinkedIn import is temporarily unavailable. Please try again later.');
+      return;
+    }
+    try {
+      setLinkedinLoading(true);
+      beginLinkedInImport();
+    } catch (err) {
+      setLinkedinLoading(false);
+      toast.error(err.message || 'Could not start LinkedIn import.');
+    }
   };
 
   const handleImageUpload = (e) => {
@@ -51,87 +95,25 @@ export const PersonalDetailsForm = () => {
   };
 
   const handleGenerateSummary = async () => {
-    const title = personal.title || 'professional';
-    const name = personal.fullName || 'candidate';
-    const location = personal.location || '';
-    
-    // Check if title is provided
     if (!personal.title || personal.title.trim() === '') {
-      handleChange('summary', "Please enter your professional title first to generate a summary.");
+      toast.error('Enter your professional title first to generate a summary.');
       return;
     }
-    
-    // Create instruction for the AI model
-    const prompt = `Write a professional 2-3 sentence resume summary for a ${title}${location ? ' based in ' + location : ''}. The summary should highlight their expertise, key skills, and professional value. Make it concise, impactful, and suitable for a resume header. Focus on what makes them valuable to potential employers.`;
-    
+
     try {
       setIsGenerating(true);
-      // Don't set text - keep textarea empty for cleaner UI
-      
-      // Get the HF token from environment or prompt user
-      const HF_TOKEN = process.env.REACT_APP_HF_TOKEN;
-      
-      if (!HF_TOKEN || HF_TOKEN === 'YOUR_HUGGINGFACE_TOKEN_HERE') {
-        handleChange('summary', "Error: HuggingFace API token not configured. Please add REACT_APP_HF_TOKEN to your environment variables and redeploy.");
-        console.error('REACT_APP_HF_TOKEN is not set. Value:', process.env.REACT_APP_HF_TOKEN);
-        setIsGenerating(false);
-        return;
-      }
-      
-      const response = await fetch(
-        "https://router.huggingface.co/v1/chat/completions",
-        {
-          headers: {
-            Authorization: `Bearer ${HF_TOKEN}`,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({
-            model: "mistralai/Mistral-7B-Instruct-v0.2:featherless-ai",
-            messages: [
-              { role: "user", content: prompt }
-            ],
-            max_tokens: 150,
-            temperature: 0.7,
-            top_p: 0.9,
-          })
-        }
-      );
-      
-            // Clone response before reading
-        const resClone = response.clone();
-
-      // Check if response is ok before parsing
-      if (!response.ok) {
-        const errorText = await resClone.text();
-        console.error('HuggingFace API Error:', response.status, errorText);
-        
-        if (response.status === 401) {
-          handleChange('summary', "Authentication error: Invalid HuggingFace API token. Please check your token.");
-        } else if (response.status === 503) {
-          handleChange('summary', "Model is loading. Please wait a moment and try again.");
-        } else {
-          handleChange('summary', `Error: ${response.status}. Please try again.`);
-        }
-        setIsGenerating(false);
-        return;
-      }
-            
-              // Parse successful response
-        const data = await response.json();
-
-        // ✅ HuggingFace chat response format
-        const generatedSummary = data?.choices?.[0]?.message?.content?.trim();
-
-        if (generatedSummary) {
-          handleChange('summary', generatedSummary);
-        } else {
-          console.error('Unexpected response format:', data);
-          handleChange('summary', "Could not generate summary. Please try again.");
-        }
+      const generatedSummary = await generateWithAI({
+        task: 'summary',
+        fields: {
+          title: personal.title,
+          location: personal.location || '',
+        },
+      });
+      handleChange('summary', generatedSummary);
+      toast.success('Summary generated');
     } catch (err) {
       console.error('Error generating summary:', err);
-      handleChange('summary', `Error: ${err.message}. Please check your internet connection.`);
+      toast.error(err.message || 'Could not generate summary. Please try again.');
     } finally {
       setIsGenerating(false);
     }
@@ -142,6 +124,32 @@ export const PersonalDetailsForm = () => {
       <div>
         <h2 className="text-2xl font-semibold text-foreground mb-2">Personal Details</h2>
         <p className="text-sm text-muted-foreground">Tell us about yourself. This information will appear at the top of your resume.</p>
+      </div>
+
+      <div className="rounded-xl border border-[#0A66C2]/25 bg-[#0A66C2]/5 p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-foreground">Import from LinkedIn</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Sign in with LinkedIn to fill your name, email, and photo.
+            </p>
+          </div>
+          <Button
+            type="button"
+            onClick={handleLinkedInImport}
+            disabled={linkedinLoading}
+            className="shrink-0 bg-[#0A66C2] hover:bg-[#004182] text-white"
+          >
+            {linkedinLoading ? (
+              <AppleLoader size={14} tone="light" label="Redirecting" labelClassName="text-white" />
+            ) : (
+              <>
+                <Linkedin className="w-4 h-4 mr-2" />
+                Continue with LinkedIn
+              </>
+            )}
+          </Button>
+        </div>
       </div>
       
       {/* Profile Picture Upload */}
@@ -329,7 +337,7 @@ export const PersonalDetailsForm = () => {
               exit={{ opacity: 0, y: 10 }}
               className="absolute bottom-4 left-4 flex items-center gap-2 text-sm font-medium text-blue-600 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-blue-100"
             >
-              <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+              <AppleLoader size={14} tone="primary" />
               <motion.span
                 animate={{
                   opacity: [0.6, 1, 0.6],

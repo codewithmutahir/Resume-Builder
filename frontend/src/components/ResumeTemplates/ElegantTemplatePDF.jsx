@@ -1,7 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image, Svg, Path } from '@react-pdf/renderer';
+import { resolveTypography } from '@/constants/typography';
 
-// Icon components
 const MailIcon = () => (
   <Svg width="10" height="10" viewBox="0 0 24 24" style={{ marginRight: 8 }}>
     <Path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#f3f4f6" strokeWidth="2" fill="none"/>
@@ -43,179 +43,203 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const ElegantTemplatePDF = ({ data, colors }) => {
+export const ElegantTemplatePDF = ({ data, colors, typography }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
   
-  // Use provided colors or fallback to defaults
   const primaryColor = colors?.primary || '#1f2937';
   const secondaryColor = colors?.secondary || '#374151';
   const accentColor = colors?.accent || '#9ca3af';
   const textColor = colors?.text || '#111827';
   const textSecondaryColor = colors?.textSecondary || '#374151';
+  const fonts = resolveTypography(typography);
 
-  // Create styles dynamically with colors
+  // Page Y-padding applies on every page (including wrapped pages).
+  // Sidebar uses negative margins so it stays full-bleed edge-to-edge.
+  const PAGE_PAD_Y = 36;
+  const COL_PAD = 28;
+
   const styles = StyleSheet.create({
     page: {
       backgroundColor: '#ffffff',
       flexDirection: 'row',
-      fontFamily: 'Times-Roman',
+      paddingTop: PAGE_PAD_Y,
+      paddingBottom: PAGE_PAD_Y,
+      fontFamily: fonts.body,
+    },
+    sidebarBg: {
+      position: 'absolute',
+      left: 0,
+      top: 0,
+      bottom: 0,
+      width: '35%',
+      backgroundColor: primaryColor,
     },
     sidebar: {
       width: '35%',
-      backgroundColor: primaryColor,
       color: '#f3f4f6',
-      padding: 32,
+      marginTop: -PAGE_PAD_Y,
+      marginBottom: -PAGE_PAD_Y,
+      paddingTop: PAGE_PAD_Y,
+      paddingBottom: PAGE_PAD_Y,
+      paddingHorizontal: COL_PAD,
     },
     mainContent: {
       width: '65%',
-      padding: 32,
+      paddingHorizontal: COL_PAD,
     },
     sidebarName: {
-      fontSize: 22,
+      fontFamily: fonts.heading,
+      fontSize: 20,
       fontWeight: 'bold',
-      marginBottom: 8,
+      marginBottom: 4,
     },
     sidebarHeader: {
-      marginBottom: 32,
+      marginBottom: 20,
       alignItems: 'center',
     },
     profileImage: {
-      width: 110,
-      height: 110,
-      borderRadius: 55,
-      borderWidth: 4,
+      width: 96,
+      height: 96,
+      borderRadius: 48,
+      borderWidth: 3,
       borderColor: 'rgba(255, 255, 255, 0.3)',
-      marginBottom: 16,
+      marginBottom: 12,
     },
     sidebarTitle: {
-      fontSize: 11,
+      fontSize: 10,
       color: '#d1d5db',
       fontStyle: 'italic',
-      marginBottom: 32,
+      marginBottom: 18,
     },
     sidebarSection: {
-      marginBottom: 32,
+      marginBottom: 16,
     },
     sidebarSectionTitle: {
-      fontSize: 11,
+      fontFamily: fonts.heading,
+      fontSize: 10,
       fontWeight: 'bold',
       textTransform: 'uppercase',
       letterSpacing: 0.5,
-      marginBottom: 12,
+      marginBottom: 8,
       color: accentColor,
     },
     sidebarText: {
-      fontSize: 11,
+      fontSize: 10,
       flex: 1,
     },
     sidebarSkill: {
-      fontSize: 11,
-      marginBottom: 8,
+      fontSize: 10,
+      marginBottom: 5,
     },
     sidebarCertName: {
-      fontSize: 11,
+      fontSize: 10,
       fontWeight: 'bold',
       color: '#f3f4f6',
-      marginBottom: 2,
+      marginBottom: 1,
     },
     sidebarCertIssuer: {
-      fontSize: 9,
+      fontSize: 8,
       color: '#d1d5db',
-      marginBottom: 2,
+      marginBottom: 1,
     },
     sidebarCertDate: {
-      fontSize: 9,
+      fontSize: 8,
       color: accentColor,
-      marginBottom: 12,
+      marginBottom: 8,
     },
     summary: {
-      fontSize: 11,
+      fontSize: 10,
       color: textColor,
-      lineHeight: 1.6,
+      lineHeight: 1.45,
       fontStyle: 'italic',
-      borderLeftWidth: 4,
+      borderLeftWidth: 3,
       borderLeftColor: primaryColor,
-      paddingLeft: 16,
-      marginBottom: 32,
+      paddingLeft: 12,
+      marginBottom: 14,
     },
     section: {
-      marginBottom: 32,
+      marginBottom: 14,
     },
     sectionTitle: {
-      fontSize: 18,
+      fontFamily: fonts.heading,
+      fontSize: 14,
       fontWeight: 'bold',
       color: textColor,
-      marginBottom: 16,
+      marginBottom: 8,
     },
     subsection: {
-      marginBottom: 24,
+      marginBottom: 10,
     },
     subsectionHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 8,
+      marginBottom: 3,
     },
     subsectionTitle: {
-      fontSize: 13,
+      fontFamily: fonts.heading,
+      fontSize: 11,
       fontWeight: 'bold',
       color: textColor,
-      marginBottom: 2,
+      marginBottom: 1,
     },
     subsectionCompany: {
-      fontSize: 11,
+      fontSize: 10,
       color: textSecondaryColor,
       fontStyle: 'italic',
     },
     subsectionDate: {
-      fontSize: 11,
+      fontSize: 10,
       color: textSecondaryColor,
       textAlign: 'right',
     },
     subsectionLocation: {
-      fontSize: 11,
+      fontSize: 10,
       color: textSecondaryColor,
       textAlign: 'right',
       fontStyle: 'italic',
     },
     text: {
-      fontSize: 11,
-      lineHeight: 1.6,
+      fontSize: 10,
+      lineHeight: 1.45,
       color: textColor,
-      marginTop: 8,
+      marginTop: 3,
     },
     refGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: 16,
+      gap: 12,
     },
     refItem: {
       width: '45%',
+      marginBottom: 8,
     },
     refName: {
-      fontSize: 11,
+      fontSize: 10,
       fontWeight: 'bold',
       color: textColor,
-      marginBottom: 2,
+      marginBottom: 1,
     },
     refTitle: {
-      fontSize: 10,
+      fontSize: 9,
       color: textSecondaryColor,
       fontStyle: 'italic',
-      marginBottom: 2,
+      marginBottom: 1,
     },
     refDetail: {
-      fontSize: 10,
+      fontSize: 9,
       color: textSecondaryColor,
-      marginBottom: 2,
+      marginBottom: 1,
     },
   });
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        {/* Sidebar */}
+      <Page size="A4" style={styles.page} wrap>
+        {/* Full-bleed sidebar color on every page (including continuation pages) */}
+        <View style={styles.sidebarBg} fixed />
+
         <View style={styles.sidebar}>
-          <View style={styles.sidebarHeader}>
+          <View style={styles.sidebarHeader} wrap={false}>
             {personal?.picture && (
               <Image
                 src={personal.picture}
@@ -226,44 +250,42 @@ export const ElegantTemplatePDF = ({ data, colors }) => {
             <Text style={styles.sidebarTitle}>{personal?.title || 'Professional Title'}</Text>
           </View>
 
-          {/* Contact */}
-          <View style={styles.sidebarSection}>
+          <View style={styles.sidebarSection} wrap={false}>
             <Text style={styles.sidebarSectionTitle}>CONTACT</Text>
             {personal?.email && (
-              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 6 }}>
                 <MailIcon />
                 <Text style={styles.sidebarText}>{personal.email}</Text>
               </View>
             )}
             {personal?.phone && (
-              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 6 }}>
                 <PhoneIcon />
                 <Text style={styles.sidebarText}>{personal.phone}</Text>
               </View>
             )}
             {personal?.location && (
-              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 6 }}>
                 <LocationIcon />
                 <Text style={styles.sidebarText}>{personal.location}</Text>
               </View>
             )}
             {personal?.linkedin && (
-              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 6 }}>
                 <LinkedinIcon />
                 <Text style={styles.sidebarText}>{personal.linkedin}</Text>
               </View>
             )}
             {personal?.website && (
-              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 6 }}>
                 <GlobeIcon />
                 <Text style={styles.sidebarText}>{personal.website}</Text>
               </View>
             )}
           </View>
 
-          {/* Skills */}
           {skills && skills.length > 0 && (
-            <View style={styles.sidebarSection}>
+            <View style={styles.sidebarSection} wrap={false}>
               <Text style={styles.sidebarSectionTitle}>SKILLS</Text>
               {skills.map((skill, index) => (
                 <Text key={index} style={styles.sidebarSkill}>{skill}</Text>
@@ -271,12 +293,11 @@ export const ElegantTemplatePDF = ({ data, colors }) => {
             </View>
           )}
 
-          {/* Certifications */}
           {certifications && certifications.length > 0 && (
             <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarSectionTitle}>CERTIFICATIONS</Text>
+              <Text style={styles.sidebarSectionTitle} minPresenceAhead={40}>CERTIFICATIONS</Text>
               {certifications.map((cert, index) => (
-                <View key={index} style={{ marginBottom: 12 }}>
+                <View key={index} style={{ marginBottom: 8 }} wrap={false}>
                   <Text style={styles.sidebarCertName}>{cert.name}</Text>
                   <Text style={styles.sidebarCertIssuer}>{cert.issuer}</Text>
                   {cert.date && <Text style={styles.sidebarCertDate}>{formatDate(cert.date)}</Text>}
@@ -286,19 +307,16 @@ export const ElegantTemplatePDF = ({ data, colors }) => {
           )}
         </View>
 
-        {/* Main Content */}
         <View style={styles.mainContent}>
-          {/* Summary */}
           {personal?.summary && (
-            <Text style={styles.summary}>{personal.summary}</Text>
+            <Text style={styles.summary} wrap={false}>{personal.summary}</Text>
           )}
 
-          {/* Experience */}
           {experience && experience.length > 0 && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Experience</Text>
+              <Text style={styles.sectionTitle} minPresenceAhead={40}>Experience</Text>
               {experience.map((exp, index) => (
-                <View key={index} style={styles.subsection}>
+                <View key={index} style={styles.subsection} wrap={false} minPresenceAhead={28}>
                   <View style={styles.subsectionHeader}>
                     <View style={{ flexDirection: 'column', flex: 1 }}>
                       <Text style={styles.subsectionTitle}>{exp.position}</Text>
@@ -317,17 +335,16 @@ export const ElegantTemplatePDF = ({ data, colors }) => {
             </View>
           )}
 
-          {/* Education */}
           {education && education.length > 0 && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Education</Text>
+              <Text style={styles.sectionTitle} minPresenceAhead={40}>Education</Text>
               {education.map((edu, index) => (
-                <View key={index} style={{ marginBottom: 16 }}>
+                <View key={index} style={styles.subsection} wrap={false} minPresenceAhead={24}>
                   <View style={styles.subsectionHeader}>
                     <View style={{ flexDirection: 'column', flex: 1 }}>
                       <Text style={styles.subsectionTitle}>{edu.degree}</Text>
                       <Text style={styles.subsectionCompany}>{edu.school}</Text>
-                      {edu.field && <Text style={{ fontSize: 10, color: textSecondaryColor }}>{edu.field}</Text>}
+                      {edu.field && <Text style={{ fontSize: 9, color: textSecondaryColor }}>{edu.field}</Text>}
                     </View>
                     <View>
                       <Text style={styles.subsectionDate}>
@@ -341,32 +358,30 @@ export const ElegantTemplatePDF = ({ data, colors }) => {
             </View>
           )}
 
-          {/* Projects */}
           {projects && projects.length > 0 && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Projects</Text>
+              <Text style={styles.sectionTitle} minPresenceAhead={40}>Projects</Text>
               {projects.map((project, index) => (
-                <View key={index} style={{ marginBottom: 16 }}>
+                <View key={index} style={styles.subsection} wrap={false} minPresenceAhead={28}>
                   <Text style={styles.subsectionTitle}>{project.name}</Text>
                   {project.technologies && (
-                    <Text style={{ fontSize: 10, color: textSecondaryColor, fontStyle: 'italic' }}>{project.technologies}</Text>
+                    <Text style={{ fontSize: 9, color: textSecondaryColor, fontStyle: 'italic' }}>{project.technologies}</Text>
                   )}
                   {project.description && <Text style={styles.text}>{project.description}</Text>}
                   {project.link && (
-                    <Text style={{ fontSize: 10, color: textSecondaryColor, marginTop: 4 }}>{project.link}</Text>
+                    <Text style={{ fontSize: 9, color: textSecondaryColor, marginTop: 2 }}>{project.link}</Text>
                   )}
                 </View>
               ))}
             </View>
           )}
 
-          {/* References */}
           {references && references.length > 0 && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>References</Text>
+              <Text style={styles.sectionTitle} minPresenceAhead={40}>References</Text>
               <View style={styles.refGrid}>
                 {references.map((ref, index) => (
-                  <View key={index} style={styles.refItem}>
+                  <View key={index} style={styles.refItem} wrap={false} minPresenceAhead={24}>
                     <Text style={styles.refName}>{ref.name}</Text>
                     <Text style={styles.refTitle}>{ref.title}</Text>
                     <Text style={styles.refDetail}>{ref.company}</Text>

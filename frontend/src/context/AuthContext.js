@@ -123,7 +123,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Check if auth is initialized
       if (!auth) {
-        const error = new Error('Firebase Authentication is not configured. Please check your Firebase setup.');
+        const error = new Error('Sign-in is temporarily unavailable. Please try again later.');
         error.code = 'auth/configuration-error';
         throw error;
       }
@@ -215,10 +215,7 @@ export const AuthProvider = ({ children }) => {
         console.error('5. CORS or domain authorization issues');
         console.error('Auth config:', auth?.config);
         
-        const errorMessage = 'Network error. Please check:\n' +
-          '1. Email/Password is enabled in Firebase Console\n' +
-          '2. Identity Toolkit API is enabled in Google Cloud Console\n' +
-          '3. Your internet connection is working';
+        const errorMessage = 'Network error. Please check your connection and try again.';
         toast.error(errorMessage);
         throw error;
       }
@@ -256,7 +253,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Check if auth is initialized
       if (!auth) {
-        const error = new Error('Firebase Authentication is not configured. Please check your Firebase setup.');
+        const error = new Error('Sign-in is temporarily unavailable. Please try again later.');
         error.code = 'auth/configuration-error';
         throw error;
       }
@@ -328,7 +325,7 @@ export const AuthProvider = ({ children }) => {
   // Sign in with Google (popup, then redirect fallback)
   const signInWithGoogle = async () => {
     if (!auth) {
-      const message = 'Firebase is not configured. Add environment variables in Vercel/hosting settings.';
+      const message = 'Sign-in is temporarily unavailable. Please try again later.';
       toast.error(message);
       throw new Error(message);
     }
@@ -336,10 +333,11 @@ export const AuthProvider = ({ children }) => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
 
+    // Only fall back to full-page redirect when popup cannot work.
+    // Do NOT redirect if the user closed/cancelled the popup — that left the
+    // login page stuck on "Signing in" when they pressed Back from Google.
     const popupFallbackCodes = new Set([
       'auth/popup-blocked',
-      'auth/popup-closed-by-user',
-      'auth/cancelled-popup-request',
       'auth/operation-not-supported-in-this-environment'
     ]);
 
@@ -351,20 +349,31 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Google sign-in error:', error);
 
+      if (
+        error.code === 'auth/popup-closed-by-user' ||
+        error.code === 'auth/cancelled-popup-request'
+      ) {
+        toast.message('Google sign-in cancelled');
+        return null;
+      }
+
       if (popupFallbackCodes.has(error.code)) {
+        try {
+          sessionStorage.setItem('resume_google_redirect', '1');
+        } catch {
+          // ignore storage errors (private mode edge cases)
+        }
         toast.message('Redirecting to Google sign-in...', { duration: 3000 });
         await signInWithRedirect(auth, provider);
-        return;
+        return null;
       }
 
       if (error.code === 'auth/network-request-failed') {
-        toast.error('Network error. Check your connection and Firebase settings.');
+        toast.error('Network error. Please check your connection and try again.');
       } else if (error.code === 'auth/operation-not-allowed') {
-        toast.error('Google sign-in is not enabled in Firebase Console.');
+        toast.error('Google sign-in is temporarily unavailable. Please try again later.');
       } else if (error.code === 'auth/unauthorized-domain') {
-        toast.error(
-          `Domain not authorized. Add "${window.location.hostname}" in Firebase → Authentication → Settings → Authorized domains.`
-        );
+        toast.error('Sign-in is not available from this site. Please try again later.');
       } else {
         toast.error(getErrorMessage(error.code) || 'Failed to sign in with Google. Please try again.');
       }
@@ -398,7 +407,7 @@ export const AuthProvider = ({ children }) => {
       case 'auth/invalid-email':
         return 'Invalid email address';
       case 'auth/operation-not-allowed':
-        return 'Email/password sign-up is not enabled. Please enable it in Firebase Console';
+        return 'Email/password sign-up is temporarily unavailable. Please try again later.';
       case 'auth/weak-password':
         return 'Password should be at least 6 characters';
       case 'auth/user-disabled':
@@ -412,21 +421,21 @@ export const AuthProvider = ({ children }) => {
       case 'auth/network-request-failed':
         return 'Network error. Please check your internet connection and Firebase configuration';
       case 'auth/unauthorized-domain':
-        return 'This domain is not authorized. Please add it in Firebase Console';
+        return 'Sign-in is not available from this site. Please try again later.';
       case 'auth/popup-blocked':
         return 'Popup was blocked. Please allow popups for this site';
       case 'auth/popup-closed-by-user':
         return 'Sign-in cancelled';
       case 'auth/configuration-error':
-        return 'Firebase is not configured. Please check your setup';
+        return 'Sign-in is temporarily unavailable. Please try again later.';
       case 'auth/invalid-argument':
         return 'Please provide valid email and password';
       case 'auth/invalid-api-key':
-        return 'Invalid API key. Please check your Firebase configuration';
+        return 'Sign-in is temporarily unavailable. Please try again later.';
       case 'auth/api-key-not-valid':
-        return 'API key is not valid. Please update your Firebase configuration';
+        return 'Sign-in is temporarily unavailable. Please try again later.';
       default:
-        return 'An error occurred. Please try again';
+        return 'An error occurred. Please try again.';
     }
   };
 
@@ -470,7 +479,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (!auth) {
       if (!isFirebaseConfigured) {
-        toast.error('Firebase is not configured. Sign-in will not work until env variables are set.');
+        toast.error('Sign-in is temporarily unavailable. Please try again later.');
       }
       setLoading(false);
       return;
@@ -481,12 +490,22 @@ export const AuthProvider = ({ children }) => {
     const finishAuthInit = async () => {
       try {
         const redirectResult = await getRedirectResult(auth);
+        try {
+          sessionStorage.removeItem('resume_google_redirect');
+        } catch {
+          // ignore
+        }
         if (redirectResult?.user) {
           await ensureGoogleUserDocument(redirectResult.user);
           toast.success('Signed in with Google!');
         }
       } catch (error) {
         console.error('Google redirect result error:', error);
+        try {
+          sessionStorage.removeItem('resume_google_redirect');
+        } catch {
+          // ignore
+        }
         if (error.code !== 'auth/popup-closed-by-user') {
           toast.error(getErrorMessage(error.code) || 'Google sign-in failed after redirect.');
         }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Linkedin, Globe } from 'lucide-react';
+import { resolveTypography } from '@/constants/typography';
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -8,7 +9,7 @@ const formatDate = (dateString) => {
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-export const ElegantTemplate = ({ data, colors }) => {
+export const ElegantTemplate = ({ data, colors, typography }) => {
   const { personal, education, experience, skills, certifications, projects, references } = data;
   
   // Use provided colors or fallback to defaults
@@ -17,15 +18,16 @@ export const ElegantTemplate = ({ data, colors }) => {
   const accentColor = colors?.accent || '#9ca3af';
   const textColor = colors?.text || '#111827';
   const textSecondaryColor = colors?.textSecondary || '#374151';
+  const fonts = resolveTypography(typography);
 
   return (
-    <div style={{ backgroundColor: 'white', color: textColor, minHeight: '100%', fontFamily: 'Georgia, serif' }}>
+    <div style={{ backgroundColor: 'white', color: textColor, minHeight: '100%', fontFamily: fonts.bodyCss }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', minHeight: '100%' }}>
         {/* Sidebar */}
-        <div style={{ backgroundColor: primaryColor, color: '#f3f4f6', padding: '32px' }}>
-          <div style={{ marginBottom: '32px', textAlign: 'center' }}>
+        <div style={{ backgroundColor: primaryColor, color: '#f3f4f6', padding: '28px' }}>
+          <div style={{ marginBottom: '14px', textAlign: 'center' }}>
             {personal.picture && (
-              <div style={{ marginBottom: '16px' }}>
+              <div style={{ marginBottom: '8px' }}>
                 <img
                   src={personal.picture}
                   alt="Profile"
@@ -40,15 +42,15 @@ export const ElegantTemplate = ({ data, colors }) => {
                 />
               </div>
             )}
-            <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', marginBottom: '8px', fontFamily: 'Playfair Display, serif' }}>
+            <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', marginBottom: '8px', fontFamily: fonts.headingCss }}>
               {personal.fullName || 'Your Name'}
             </h1>
             <p style={{ color: '#d1d5db', fontSize: '0.875rem', fontStyle: 'italic' }}>{personal.title || 'Professional Title'}</p>
           </div>
 
           {/* Contact */}
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '0.875rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px', color: accentColor, fontFamily: 'Playfair Display, serif' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '0.875rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px', color: accentColor, fontFamily: fonts.headingCss }}>
               Contact
             </h2>
             <div style={{ fontSize: '0.875rem' }}>
@@ -87,8 +89,8 @@ export const ElegantTemplate = ({ data, colors }) => {
 
           {/* Skills */}
           {skills.length > 0 && (
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '0.875rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', color: accentColor, fontFamily: 'Playfair Display, serif', marginBottom: '12px' }}>
+            <div style={{ marginBottom: '14px' }}>
+              <h2 style={{ fontSize: '0.875rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', color: accentColor, fontFamily: fonts.headingCss, marginBottom: '12px' }}>
                 Skills
               </h2>
               <div>
@@ -104,7 +106,7 @@ export const ElegantTemplate = ({ data, colors }) => {
           {/* Certifications */}
           {certifications.length > 0 && (
             <div>
-              <h2 style={{ fontSize: '0.875rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', color: accentColor, fontFamily: 'Playfair Display, serif', marginBottom: '12px' }}>
+              <h2 style={{ fontSize: '0.875rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', color: accentColor, fontFamily: fonts.headingCss, marginBottom: '12px' }}>
                 Certifications
               </h2>
               <div>
@@ -121,10 +123,10 @@ export const ElegantTemplate = ({ data, colors }) => {
         </div>
 
         {/* Main Content */}
-        <div style={{ padding: '32px' }}>
+        <div style={{ padding: '28px' }}>
           {/* Summary */}
           {personal.summary && (
-            <div style={{ marginBottom: '32px' }}>
+            <div style={{ marginBottom: '14px' }}>
               <p style={{ color: textColor, lineHeight: '1.625', fontStyle: 'italic', borderLeft: `4px solid ${primaryColor}`, paddingLeft: '16px' }}>
                 {personal.summary}
               </p>
@@ -133,14 +135,14 @@ export const ElegantTemplate = ({ data, colors }) => {
 
           {/* Experience */}
           {experience.length > 0 && (
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: textColor, fontFamily: 'Playfair Display, serif', marginBottom: '16px' }}>
+            <div style={{ marginBottom: '14px' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: textColor, fontFamily: fonts.headingCss, marginBottom: '8px' }}>
                 Experience
               </h2>
               <div>
                 {experience.map((exp, index) => (
-                  <div key={index} style={{ marginBottom: index < experience.length - 1 ? '24px' : '0' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                  <div key={index} style={{ marginBottom: index < experience.length - 1 ? '10px' : '0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '3px' }}>
                       <div>
                         <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', color: textColor }}>{exp.position}</h3>
                         <p style={{ color: textSecondaryColor, fontStyle: 'italic' }}>{exp.company}</p>
@@ -161,13 +163,13 @@ export const ElegantTemplate = ({ data, colors }) => {
 
           {/* Education */}
           {education.length > 0 && (
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: textColor, fontFamily: 'Playfair Display, serif', marginBottom: '16px' }}>
+            <div style={{ marginBottom: '14px' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: textColor, fontFamily: fonts.headingCss, marginBottom: '8px' }}>
                 Education
               </h2>
               <div>
                 {education.map((edu, index) => (
-                  <div key={index} style={{ marginBottom: index < education.length - 1 ? '16px' : '0' }}>
+                  <div key={index} style={{ marginBottom: index < education.length - 1 ? '8px' : '0' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
                         <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', color: textColor }}>{edu.degree}</h3>
@@ -189,13 +191,13 @@ export const ElegantTemplate = ({ data, colors }) => {
 
           {/* Projects */}
           {projects.length > 0 && (
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: textColor, fontFamily: 'Playfair Display, serif', marginBottom: '16px' }}>
+            <div style={{ marginBottom: '14px' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: textColor, fontFamily: fonts.headingCss, marginBottom: '8px' }}>
                 Projects
               </h2>
               <div>
                 {projects.map((project, index) => (
-                  <div key={index} style={{ marginBottom: index < projects.length - 1 ? '16px' : '0' }}>
+                  <div key={index} style={{ marginBottom: index < projects.length - 1 ? '8px' : '0' }}>
                     <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', color: textColor }}>{project.name}</h3>
                     {project.technologies && (
                       <p style={{ fontSize: '0.875rem', color: textSecondaryColor, fontStyle: 'italic' }}>{project.technologies}</p>
@@ -213,7 +215,7 @@ export const ElegantTemplate = ({ data, colors }) => {
           {/* References */}
           {references.length > 0 && (
             <div>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: textColor, fontFamily: 'Playfair Display, serif', marginBottom: '16px' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: textColor, fontFamily: fonts.headingCss, marginBottom: '8px' }}>
                 References
               </h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
